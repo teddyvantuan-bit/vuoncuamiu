@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vườn của Miu — Miu's Garden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:wght@300;400;500;600&family=Noto+Serif+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{
+  --paper:#faf8f5;--paper2:#f4f1ec;--paper3:#ede9e2;
+  --linen:#e5dfd4;--linen2:#cfc8bb;
+  --sage:#7aad95;--sage2:#5d9980;--sage3:#4a8269;
+  --mint:#a8ccbc;--mint2:#c5ddd3;--mint3:#deeee8;--mint4:#edf6f2;
+  --blush:#f0e4e9;--blush2:#e2c8d4;--rose:#c4849e;--rose2:#a8607e;
+  --lavender:#d8d4ea;--peach:#f0ddd0;
+  --ink:#2d2c2a;--ink2:#5a5752;--ink3:#9a958e;--ink4:#c4bfb8;
+  --white:#fff;--radius:8px;--radius2:16px;--radius3:24px;
+  --shadow:0 1px 10px rgba(90,85,75,.06);
+  --shadow2:0 4px 24px rgba(90,85,75,.09);
+  --shadow3:0 8px 40px rgba(90,85,75,.13);
+  --font-h:'Cormorant Garamond','Georgia',serif;
+  --font-b:'DM Sans','Helvetica Neue',sans-serif;
+  --font-jp:'Noto Serif JP',serif;
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-b);min-height:100vh;line-height:1.55;-webkit-font-smoothing:antialiased}
+
+/* ═══ LOGIN ═══ */
+.login-overlay{position:fixed;inset:0;z-index:9999;background:var(--paper);display:flex;align-items:center;justify-content:center;transition:opacity .6s var(--ease),visibility .6s}
+.login-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.login-card{width:400px;max-width:92vw;background:var(--white);border:1px solid var(--linen);border-radius:var(--radius3);padding:2.5rem 2rem;text-align:center;box-shadow:var(--shadow3);animation:fadeUp .7s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.login-brand-icon{font-size:2.2rem;margin-bottom:.5rem}
+.login-brand{font-family:var(--font-h);font-size:1.8rem;font-weight:700;color:var(--ink)}
+.login-brand em{font-style:normal;color:var(--sage)}
+.login-sub{font-size:10px;color:var(--ink3);letter-spacing:.2em;text-transform:uppercase;margin-top:2px;margin-bottom:1.5rem}
+.login-divider{display:flex;align-items:center;gap:12px;margin:1.25rem 0;color:var(--ink4);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--linen)}
+.g-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:11px 20px;background:var(--white);border:1.5px solid var(--linen);border-radius:99px;font-family:var(--font-b);font-size:13px;font-weight:500;color:var(--ink);cursor:pointer;transition:all .2s}
+.g-btn:hover{border-color:var(--sage);background:var(--mint4)}
+.g-btn svg{width:18px;height:18px}
+.guest-btn{display:inline-block;margin-top:1rem;background:none;border:none;font-family:var(--font-h);font-size:13px;color:var(--ink3);cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-style:italic}
+.guest-btn:hover{color:var(--sage2)}
+.login-footer{margin-top:1.5rem;font-size:10.5px;color:var(--ink4);font-family:var(--font-h);font-style:italic}
+
+/* ═══ LAYOUT — Japanese House ═══ */
+.app-shell{display:grid;grid-template-columns:260px 1fr 290px;grid-template-rows:56px 1fr;height:100vh;overflow:hidden;opacity:0;transition:opacity .5s var(--ease)}
+.app-shell.visible{opacity:1}
+
+/* ═══ TOPBAR ═══ */
+.topbar{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;background:var(--white);border-bottom:1px solid var(--linen);z-index:50}
+.brand{display:flex;align-items:center;gap:8px}
+.brand-mark{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--mint3),var(--mint4));border:1px solid var(--mint2);display:flex;align-items:center;justify-content:center;font-size:13px}
+.brand-name{font-family:var(--font-h);font-size:1.15rem;font-weight:500;color:var(--ink)}
+.brand-name em{font-style:normal;color:var(--sage);font-weight:700}
+.brand-sub{font-size:8.5px;color:var(--ink3);letter-spacing:.2em;text-transform:uppercase;margin-left:1px}
+.topbar-center{text-align:center}
+.tb-date{font-family:var(--font-h);font-size:.88rem;color:var(--ink2)}
+.tb-lunar{font-size:9.5px;color:var(--ink3);font-family:var(--font-h);font-style:italic}
+.hud{display:flex;align-items:center;gap:12px}
+.hud-mood-dot{width:7px;height:7px;border-radius:50%;background:var(--linen2);border:1.5px solid transparent;transition:all .2s}
+.hud-mood-dot.active-good{background:var(--sage);border-color:var(--sage2)}
+.hud-mood-dot.active-great{background:var(--rose);border-color:var(--rose2)}
+.lv-pill{background:var(--mint4);border:1px solid var(--mint2);border-radius:99px;padding:2px 10px;font-size:10px;color:var(--sage3);font-weight:500}
+.lv-xp-bar{width:70px;height:3px;background:var(--linen);border-radius:99px;overflow:hidden}
+.lv-xp-fill{height:100%;background:linear-gradient(90deg,var(--sage),var(--mint));border-radius:99px;transition:width .8s var(--ease)}
+.lv-xp-txt{font-size:8.5px;color:var(--ink4);text-align:right}
+.user-profile{display:flex;align-items:center;gap:6px;padding:3px 3px 3px 10px;background:var(--paper2);border:1px solid var(--linen);border-radius:99px;cursor:pointer;transition:all .15s}
+.user-profile:hover{border-color:var(--mint2)}
+.user-name{font-size:11px;color:var(--ink2);font-weight:500}
+.user-avatar{width:24px;height:24px;border-radius:50%;background:var(--mint3);border:1px solid var(--mint2);display:flex;align-items:center;justify-content:center;font-size:10px;overflow:hidden}
+.user-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.user-menu{position:absolute;top:calc(100% + 4px);right:0;background:var(--white);border:1px solid var(--linen);border-radius:var(--radius);padding:4px;box-shadow:var(--shadow2);z-index:100;min-width:140px;display:none}
+.user-menu.show{display:block}
+.user-menu-item{display:flex;align-items:center;gap:6px;padding:7px 10px;border-radius:4px;font-size:11.5px;color:var(--ink2);cursor:pointer;border:none;background:none;width:100%;font-family:var(--font-b);text-align:left;transition:all .1s}
+.user-menu-item:hover{background:var(--paper2)}
+.user-menu-sep{height:1px;background:var(--linen);margin:3px 0}
+
+/* ═══ COLUMNS ═══ */
+.col-left{border-right:1px solid var(--linen);overflow-y:auto;padding:1.25rem 1rem;background:var(--white)}
+.col-main{overflow-y:auto;padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:1.1rem;background:var(--paper)}
+.col-main>*{flex-shrink:0}
+.col-right{border-left:1px solid var(--linen);overflow-y:auto;padding:1.25rem 1rem;background:var(--white);display:flex;flex-direction:column;gap:1.1rem}
+
+/* ═══ SHARED ═══ */
+.sec-label{font-size:8.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink3);font-weight:600;margin-bottom:.7rem;display:flex;align-items:center;gap:8px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--linen)}
+.card{background:var(--white);border:1px solid var(--linen);border-radius:var(--radius2);padding:1.25rem;box-shadow:var(--shadow);transition:box-shadow .3s var(--ease)}
+input[type=date],input[type=text],input[type=number],textarea,select{background:var(--paper2);border:1px solid var(--linen);color:var(--ink);border-radius:var(--radius);padding:7px 10px;font-family:var(--font-b);font-size:12.5px;outline:none;transition:border-color .15s,background .15s;width:100%}
+input:focus,textarea:focus,select:focus{border-color:var(--sage);background:var(--white)}
+input[type=date]{width:auto;flex:1}
+textarea{resize:none;line-height:1.6}
+.btn{background:var(--sage);color:white;border:none;border-radius:99px;padding:7px 16px;font-family:var(--font-b);font-size:11.5px;font-weight:500;cursor:pointer;transition:all .2s var(--ease);letter-spacing:.04em;white-space:nowrap}
+.btn:hover{background:var(--sage2);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn-sm{padding:5px 12px;font-size:10.5px}
+.btn-ghost{background:none;border:1px solid var(--linen);color:var(--ink3);border-radius:99px;padding:5px 12px;font-size:11px;font-family:var(--font-b);cursor:pointer;transition:all .15s}
+.btn-ghost:hover{border-color:var(--sage);color:var(--sage)}
+.btn-rose{background:var(--rose)}
+.btn-rose:hover{background:var(--rose2)}
+.empty{text-align:center;color:var(--ink4);font-family:var(--font-h);font-size:12.5px;padding:1rem 0;font-style:italic}
+
+/* ═══ QUOTE — Kakejiku (small scroll) ═══ */
+.quote-strip{padding:.85rem 1rem;background:linear-gradient(135deg,var(--mint4) 0%,var(--paper) 70%,var(--blush) 100%);border:1px solid var(--mint2);border-radius:var(--radius2);text-align:center;margin-bottom:.25rem}
+.quote-greeting{font-size:10px;color:var(--ink3);letter-spacing:.08em;font-family:var(--font-h);font-style:italic}
+.quote-text{font-family:var(--font-h);font-size:1rem;font-weight:500;color:var(--ink);line-height:1.5;margin-top:3px}
+.quote-footer{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:4px}
+.quote-author{font-size:10px;color:var(--sage2);font-family:var(--font-h);font-style:italic}
+.quote-refresh{background:none;border:none;color:var(--ink4);font-size:12px;cursor:pointer;padding:2px;transition:color .2s}
+.quote-refresh:hover{color:var(--sage)}
+
+/* ═══ CALENDAR ═══ */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+.cal-nav-btn{width:26px;height:26px;background:none;border:1px solid var(--linen);border-radius:50%;cursor:pointer;color:var(--ink3);font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.cal-nav-btn:hover{border-color:var(--sage);color:var(--sage)}
+.cal-month-lbl{font-family:var(--font-h);font-size:.9rem;color:var(--ink2)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+.cal-dlbl{text-align:center;font-size:8.5px;color:var(--ink4);padding:3px 0;font-weight:600;letter-spacing:.06em}
+.cal-dlbl.cn{color:var(--rose)}
+.cell{border-radius:6px;padding:1px;cursor:pointer;text-align:center;min-height:38px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid transparent;transition:all .12s;position:relative}
+.cell:hover{background:var(--mint4)}
+.cell.empty{pointer-events:none}
+.cell.today{background:var(--sage);border-color:var(--sage2)}
+.cell.today .csol{color:white;font-weight:600}
+.cell.today .clun{color:rgba(255,255,255,.75)}
+.cell.sel{background:var(--mint3);border-color:var(--mint)}
+.cell.has-ev::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:3px;height:3px;border-radius:50%;background:var(--rose)}
+.cell.sun .csol{color:var(--rose)}
+.cell.today.sun .csol{color:white}
+.csol{font-size:11.5px;color:var(--ink);line-height:1}
+.clun{font-size:8px;color:var(--ink4);line-height:1.2;margin-top:1px}
+
+/* ═══ DATE CONVERTER ═══ */
+.convert-box{margin-top:1rem;padding:.85rem;background:var(--paper2);border-radius:var(--radius);border:1px solid var(--linen)}
+.conv-row{display:flex;gap:5px}
+.conv-result{margin-top:8px;font-size:13.5px;color:var(--sage3);font-family:var(--font-h);font-weight:600;display:none;background:var(--mint4);border:1px solid var(--mint2);border-radius:var(--radius);padding:10px 12px;line-height:1.5;text-align:center}
+
+/* ═══ MOOD ═══ */
+.mood-strip{display:flex;align-items:center;gap:10px}
+.mood-btn-mini{border:1.5px solid var(--linen);border-radius:var(--radius2);padding:.65rem .75rem;background:var(--paper2);cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .2s;flex:1;font-family:var(--font-b)}
+.mood-btn-mini:hover{border-color:var(--mint2);background:var(--mint4)}
+.mood-btn-mini.sel-good{border-color:var(--sage);background:var(--mint4)}
+.mood-btn-mini.sel-great{border-color:var(--rose);background:var(--blush)}
+.mood-btn-mini .m-icon{font-size:1.3rem}
+.mood-btn-mini .m-text{font-size:12px;color:var(--ink2);font-weight:500}
+.mood-btn-mini .m-sub{font-size:9.5px;color:var(--ink3);font-family:var(--font-h);font-style:italic}
+.mood-history{display:flex;gap:4px;flex-wrap:wrap}
+.mood-pip{width:22px;height:22px;border-radius:50%;border:1px solid var(--linen);display:flex;align-items:center;justify-content:center;font-size:9px;position:relative;transition:transform .15s}
+.mood-pip:hover{transform:scale(1.15)}
+.mood-pip.good{background:var(--mint3);border-color:var(--mint2)}
+.mood-pip.great{background:var(--blush);border-color:var(--blush2)}
+.mood-pip:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);background:var(--ink);color:white;font-size:9px;padding:2px 7px;border-radius:4px;white-space:nowrap;z-index:99}
+
+/* ═══ TODO ═══ */
+.todo-input-row{display:flex;gap:5px;margin-bottom:8px}
+.todo-input-row input{flex:1;font-size:12.5px}
+.todo-list{display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto}
+.todo-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--paper2);border:1px solid var(--linen);border-radius:6px;transition:all .15s;position:relative}
+.todo-item:hover{border-color:var(--linen2)}
+.todo-item.done{opacity:.5}
+.todo-item.done .todo-text{text-decoration:line-through;color:var(--ink3)}
+.todo-cb{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--linen2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;color:transparent;transition:all .15s;flex-shrink:0;padding:0}
+.todo-cb:hover{border-color:var(--sage)}
+.todo-item.done .todo-cb{background:var(--sage);border-color:var(--sage);color:white}
+.todo-text{flex:1;font-size:12.5px;color:var(--ink)}
+.todo-del{background:none;border:none;color:var(--ink4);cursor:pointer;font-size:12px;opacity:0;transition:opacity .15s;padding:2px}
+.todo-item:hover .todo-del{opacity:1}
+.todo-progress{display:flex;align-items:center;gap:8px;margin-top:6px}
+.todo-bar{flex:1;height:3px;background:var(--linen);border-radius:99px;overflow:hidden}
+.todo-bar-fill{height:100%;background:var(--sage);border-radius:99px;transition:width .4s var(--ease)}
+.todo-pct{font-size:10px;color:var(--ink3)}
+
+/* ═══ POMODORO ═══ */
+.pomo-tabs{display:flex;gap:3px;background:var(--paper2);border:1px solid var(--linen);border-radius:99px;padding:2px;margin-bottom:1rem}
+.pomo-tab{flex:1;padding:5px 6px;border-radius:99px;border:none;background:transparent;color:var(--ink3);font-family:var(--font-b);font-size:10.5px;font-weight:500;cursor:pointer;transition:all .2s}
+.pomo-tab.active{background:var(--white);color:var(--sage3);box-shadow:var(--shadow)}
+.pomo-custom{display:none;gap:8px;align-items:flex-end;background:var(--paper2);border-radius:var(--radius);padding:8px 10px;margin-bottom:10px;border:1px solid var(--linen)}
+.pomo-custom.show{display:flex}
+.c-inp-wrap{display:flex;flex-direction:column;gap:2px}
+.c-inp-wrap label{font-size:8.5px;color:var(--ink3);letter-spacing:.1em;text-transform:uppercase}
+.c-inp-wrap input[type=number]{width:56px;text-align:center;font-size:.9rem}
+.pomo-ring-wrap{display:flex;justify-content:center;margin:.5rem 0}
+.pomo-ring{position:relative;width:180px;height:180px}
+.pomo-ring svg{transform:rotate(-90deg);width:180px;height:180px;position:absolute;top:0;left:0}
+.ring-track{fill:none;stroke:var(--linen);stroke-width:6}
+.ring-fill{fill:none;stroke:var(--sage);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset 1s linear;filter:drop-shadow(0 0 5px rgba(122,173,149,.25))}
+.ring-fill.break-phase{stroke:var(--rose);filter:drop-shadow(0 0 5px rgba(196,132,158,.2))}
+.pomo-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.pomo-time{font-family:var(--font-h);font-size:2.75rem;font-weight:600;color:var(--ink);line-height:1;letter-spacing:.04em}
+.pomo-phase-lbl{font-size:9px;color:var(--ink3);letter-spacing:.2em;text-transform:uppercase}
+.pomo-ctrl{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:1rem}
+.ctrl-circle{width:34px;height:34px;border-radius:50%;background:none;border:1px solid var(--linen);color:var(--ink3);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.ctrl-circle:hover{border-color:var(--sage);color:var(--sage)}
+.ctrl-main{border:1.5px solid var(--sage);background:none;color:var(--sage3);border-radius:99px;padding:9px 28px;font-family:var(--font-b);font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;letter-spacing:.06em}
+.ctrl-main:hover{background:var(--sage);color:white}
+.ctrl-main.running{border-color:var(--rose);color:var(--rose2)}
+.ctrl-main.running:hover{background:var(--rose);color:white}
+.pomo-stats{display:flex;justify-content:center;gap:1.5rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--linen)}
+.pstat{text-align:center}
+.pstat-n{font-family:var(--font-h);font-size:1.3rem;color:var(--sage3);font-weight:500}
+.pstat-l{font-size:8.5px;color:var(--ink3);letter-spacing:.1em;text-transform:uppercase;margin-top:1px}
+
+/* ═══ MUSIC SELECTOR ═══ */
+.music-row{display:flex;align-items:center;gap:6px;margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--linen)}
+.music-label{font-size:9px;color:var(--ink3);letter-spacing:.1em;text-transform:uppercase;flex-shrink:0}
+.music-btns{display:flex;gap:3px;flex-wrap:wrap}
+.music-btn{padding:4px 10px;border-radius:99px;border:1px solid var(--linen);background:var(--paper2);font-size:10.5px;color:var(--ink3);cursor:pointer;transition:all .15s;font-family:var(--font-b)}
+.music-btn:hover{border-color:var(--mint2);background:var(--mint4)}
+.music-btn.active{border-color:var(--sage);background:var(--mint4);color:var(--sage3)}
+.vol-slider{width:50px;height:3px;-webkit-appearance:none;appearance:none;background:var(--linen);border-radius:99px;outline:none;cursor:pointer}
+.vol-slider::-webkit-slider-thumb{-webkit-appearance:none;width:10px;height:10px;border-radius:50%;background:var(--sage);cursor:pointer}
+
+/* ═══ JOURNAL ═══ */
+.journal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem}
+.journal-date-lbl{font-family:var(--font-h);font-size:1rem;font-weight:600;color:var(--ink)}
+.journal-textarea{height:110px;font-size:13px;font-family:var(--font-h);font-weight:500;color:var(--ink);line-height:1.8;background-image:repeating-linear-gradient(transparent,transparent calc(1.8em - 1px),var(--linen) calc(1.8em - 1px),var(--linen) 1.8em);background-attachment:local;border:none;border-radius:0;border-bottom:1px solid var(--linen);padding:0 2px 4px;resize:none;width:100%;background-color:transparent;outline:none;transition:border-color .2s}
+.journal-textarea:focus{border-bottom-color:var(--sage)}
+.journal-actions{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.journal-char{font-size:10px;color:var(--ink4)}
+.journal-entries{margin-top:.75rem;display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto}
+.journal-entry{padding:8px 10px;background:var(--paper2);border-radius:6px;border:1px solid var(--linen);transition:all .12s;position:relative;cursor:pointer}
+.journal-entry:hover{border-color:var(--linen2)}
+.j-entry-date{font-size:9px;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;font-weight:500}
+.j-entry-text{font-family:var(--font-h);font-size:12.5px;color:var(--ink);font-weight:500;line-height:1.5;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.j-entry-del{position:absolute;top:6px;right:6px;background:none;border:none;color:var(--ink4);cursor:pointer;font-size:13px;opacity:0;transition:opacity .15s}
+.journal-entry:hover .j-entry-del{opacity:1}
+.j-entry-mood{position:absolute;top:7px;right:24px;font-size:10px}
+
+/* ═══ EVENTS (right sidebar) ═══ */
+.ev-add-row{display:flex;flex-direction:column;gap:5px;margin-bottom:6px}
+.ev-add-row input,.ev-add-row textarea{font-size:12px}
+.ev-add-row textarea{height:36px}
+.ev-list{display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto}
+.ev-card{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;background:var(--paper2);border:1px solid var(--linen);border-radius:6px;transition:all .12s;position:relative}
+.ev-card:hover{border-color:var(--linen2)}
+.ev-card.upcoming{border-left:2px solid var(--sage)}
+.ev-card.past-ev{opacity:.55;border-left:2px solid var(--linen2)}
+.ev-card.today-ev{border-left:2px solid var(--rose);background:var(--blush)}
+.ev-count{min-width:38px;text-align:center;flex-shrink:0}
+.ev-count-n{font-family:var(--font-h);font-size:1.25rem;color:var(--sage3);line-height:1}
+.ev-count-l{font-size:8px;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase}
+.ev-meta{flex:1;min-width:0}
+.ev-title{font-size:12px;color:var(--ink);font-weight:500}
+.ev-lunar{font-size:10px;color:var(--sage2);font-family:var(--font-h);font-style:italic;margin-top:1px}
+.ev-note{font-size:10.5px;color:var(--ink3);margin-top:1px}
+.ev-del{position:absolute;top:5px;right:6px;background:none;border:none;color:var(--ink4);cursor:pointer;font-size:12px;opacity:0;transition:opacity .15s}
+.ev-card:hover .ev-del{opacity:1}
+.sel-info{font-size:10.5px;color:var(--sage3);background:var(--mint4);border-radius:4px;padding:4px 8px;margin-bottom:6px;display:none;font-family:var(--font-h);font-style:italic}
+
+/* ═══ STREAK ═══ */
+.streak-block{text-align:center;padding:1rem .75rem;background:linear-gradient(135deg,var(--mint4),var(--paper));border:1px solid var(--mint2);border-radius:var(--radius2)}
+.streak-n{font-family:var(--font-h);font-size:2.25rem;font-weight:700;color:var(--sage3);line-height:1}
+.streak-l{font-size:8.5px;color:var(--ink3);letter-spacing:.18em;text-transform:uppercase;margin-top:3px}
+.streak-max{font-size:10px;color:var(--ink3);margin-top:4px;font-family:var(--font-h);font-style:italic}
+
+/* ═══ MONTHLY GOALS ═══ */
+.goal-input-row{display:flex;gap:5px;margin-bottom:6px}
+.goal-list{display:flex;flex-direction:column;gap:4px;max-height:160px;overflow-y:auto}
+.goal-item{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--paper2);border:1px solid var(--linen);border-radius:6px;transition:all .12s}
+.goal-item.done .goal-text{text-decoration:line-through;color:var(--ink3)}
+.goal-cb{width:14px;height:14px;border-radius:3px;border:1.5px solid var(--linen2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:8px;color:transparent;transition:all .15s;flex-shrink:0;padding:0}
+.goal-item.done .goal-cb{background:var(--sage);border-color:var(--sage);color:white}
+.goal-text{flex:1;font-size:11.5px;color:var(--ink)}
+.goal-del{background:none;border:none;color:var(--ink4);cursor:pointer;font-size:11px;opacity:0;transition:opacity .15s;padding:1px}
+.goal-item:hover .goal-del{opacity:1}
+.goal-month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.goal-month-lbl{font-family:var(--font-h);font-size:.85rem;color:var(--ink2)}
+
+/* ═══ MONTHLY REFLECTION ═══ */
+.reflect-prompt{font-size:11px;color:var(--ink3);font-family:var(--font-h);font-style:italic;margin-bottom:6px;line-height:1.5}
+.reflect-textarea{height:80px;font-size:12px;font-family:var(--font-h);line-height:1.7;margin-bottom:6px}
+.reflect-saved{font-size:10.5px;color:var(--sage2);font-family:var(--font-h);font-style:italic;margin-top:4px}
+
+/* ═══ BADGES ═══ */
+.badges-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.badge-item{aspect-ratio:1;border-radius:6px;border:1px solid var(--linen);background:var(--paper2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:all .2s;position:relative}
+.badge-item.earned{border-color:var(--sage);background:var(--mint4)}
+.badge-item.earned:hover{transform:scale(1.08)}
+.badge-icon{font-size:1rem;filter:grayscale(1);opacity:.3}
+.badge-item.earned .badge-icon{filter:none;opacity:1}
+.badge-name{font-size:7px;color:var(--ink4);text-align:center;line-height:1.1;font-family:var(--font-jp)}
+.badge-item.earned .badge-name{color:var(--sage3);font-weight:700}
+.badge-item:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:var(--ink);color:white;font-size:9px;padding:2px 6px;border-radius:3px;white-space:nowrap;z-index:99;font-family:var(--font-b)}
+
+/* ═══ LOG ═══ */
+.log-scroll{max-height:160px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.log-row{display:flex;align-items:center;gap:6px;padding:5px 8px;background:var(--paper2);border:1px solid var(--linen);border-radius:6px}
+.log-pip{width:5px;height:5px;border-radius:50%;background:var(--sage);flex-shrink:0}
+.log-pip.brk{background:var(--rose)}
+.log-txt{flex:1;font-size:10.5px;color:var(--ink2)}
+.log-tm{font-size:9px;color:var(--ink4)}
+.log-xp{font-size:10px;color:var(--sage2);font-weight:500}
+
+/* ═══ TOAST ═══ */
+.toast{position:fixed;top:66px;right:16px;background:var(--white);border:1px solid var(--linen);border-radius:99px;padding:7px 18px;font-size:12px;color:var(--sage3);font-weight:500;box-shadow:var(--shadow2);z-index:999;transform:translateX(300%);transition:transform .4s ease}
+.toast.show{transform:translateX(0)}
+
+/* ═══ OVERLAYS ═══ */
+.overlay-bg{position:fixed;inset:0;background:rgba(250,248,245,.92);backdrop-filter:blur(14px);z-index:400;display:none;align-items:center;justify-content:center}
+.overlay-bg.show{display:flex}
+.overlay-box{background:var(--white);border:1px solid var(--linen);border-radius:var(--radius3);padding:2.5rem;text-align:center;box-shadow:var(--shadow3);animation:fadeUp .4s ease}
+.lv-emoji{font-size:2.2rem;margin-bottom:.5rem}
+.lv-title{font-family:var(--font-h);font-size:.9rem;color:var(--ink3);letter-spacing:.18em;text-transform:uppercase}
+.lv-num{font-family:var(--font-h);font-size:4.5rem;font-weight:700;color:var(--sage3);line-height:1;margin:.2rem 0}
+.lv-sub{font-family:var(--font-h);font-size:1rem;color:var(--ink2);font-style:italic}
+.lv-close{margin-top:1.5rem;font-size:10px;color:var(--ink4);letter-spacing:.1em;cursor:pointer;text-transform:uppercase}
+.j-expanded-box{background:var(--white);border:1px solid var(--linen);border-radius:var(--radius2);width:500px;max-width:90vw;padding:1.75rem;box-shadow:var(--shadow3);display:flex;flex-direction:column;gap:.75rem;animation:fadeUp .35s ease;text-align:left}
+.j-exp-header{display:flex;align-items:center;justify-content:space-between}
+.j-exp-title{font-family:var(--font-h);font-size:1.1rem;color:var(--ink2);font-style:italic}
+.j-exp-close{background:none;border:none;color:var(--ink3);cursor:pointer;font-size:18px;line-height:1}
+.j-exp-full{font-family:var(--font-h);font-size:13px;color:var(--ink);line-height:1.8;white-space:pre-wrap;max-height:60vh;overflow-y:auto}
+
+/* ═══ SCROLLBAR ═══ */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--linen);border-radius:99px}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <div class="login-brand-icon">🌿</div>
+    <div class="login-brand">Vườn của <em>Miu</em></div>
+    <div class="login-sub">Garden &middot; Calendar &middot; Journal</div>
+    <div id="gsiButtonWrap"></div>
+    <button class="g-btn" id="googleLoginBtn" style="display:none;">
+      <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+      Đăng nhập với Google
+    </button>
+    <div class="login-divider">hoặc</div>
+    <button class="guest-btn" id="guestLoginBtn">Tiếp tục không đăng nhập</button>
+    <div class="login-footer">Dữ liệu được lưu ngay trên trình duyệt của bạn.</div>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div class="app-shell" id="appShell">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">🌿</div>
+      <div>
+        <div class="brand-name">Vườn của <em>Miu</em></div>
+        <div class="brand-sub">Garden &middot; Calendar &middot; Journal</div>
+      </div>
+    </div>
+    <div class="topbar-center">
+      <div class="tb-date" id="hdrSolar">&mdash;</div>
+      <div class="tb-lunar" id="hdrLunar">&mdash;</div>
+    </div>
+    <div class="hud">
+      <div class="hud-mood-dot" id="moodDotToday" title="Tâm trạng"></div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="lv-pill" id="lvPill">Lv.1</span>
+        <div>
+          <div class="lv-xp-bar"><div class="lv-xp-fill" id="lvXpFill" style="width:0%"></div></div>
+          <div class="lv-xp-txt" id="lvXpTxt">0/100 XP</div>
+        </div>
+      </div>
+      <div style="position:relative">
+        <div class="user-profile" id="userProfileBtn">
+          <span class="user-name" id="userName">Khách</span>
+          <div class="user-avatar" id="userAvatar">🌸</div>
+        </div>
+        <div class="user-menu" id="userMenu">
+          <button class="user-menu-item" id="menuLogin">🔑 Đăng nhập</button>
+          <div class="user-menu-sep"></div>
+          <button class="user-menu-item" id="menuLogout">🚪 Đăng xuất</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- LEFT — Genkan: Calendar & Navigation -->
+  <aside class="col-left">
+    <!-- Kakejiku quote -->
+    <div class="quote-strip" id="quoteCard">
+      <div class="quote-greeting" id="quoteGreeting"></div>
+      <div class="quote-text" id="quoteText"></div>
+      <div class="quote-footer">
+        <span class="quote-author" id="quoteAuthor"></span>
+        <button class="quote-refresh" id="quoteRefresh" title="Câu khác">↻</button>
+      </div>
+    </div>
+
+    <div style="margin-top:1rem">
+      <div class="sec-label">Lịch Tháng</div>
+      <div class="cal-nav">
+        <button class="cal-nav-btn" id="prevM">&#8249;</button>
+        <span class="cal-month-lbl" id="calLbl"></span>
+        <button class="cal-nav-btn" id="nextM">&#8250;</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+
+    <div class="convert-box">
+      <div class="sec-label" style="margin-bottom:.5rem">Chuyển Đổi Ngày</div>
+      <div class="conv-row">
+        <input type="date" id="convIn"/>
+        <button class="btn btn-sm" id="convBtn" style="border-radius:6px">Đổi</button>
+      </div>
+      <div class="conv-result" id="convOut"></div>
+    </div>
+  </aside>
+
+  <!-- MAIN — Tatami: Daily Activities -->
+  <main class="col-main">
+
+    <!-- Mood -->
+    <div class="card">
+      <div class="sec-label">Tâm Trạng Hôm Nay</div>
+      <div class="mood-strip">
+        <button class="mood-btn-mini" data-mood="good" id="moodBtnGood">
+          <span class="m-icon">🌿</span>
+          <div><div class="m-text">Tốt</div><div class="m-sub">bình yên</div></div>
+        </button>
+        <button class="mood-btn-mini" data-mood="great" id="moodBtnGreat">
+          <span class="m-icon">🌸</span>
+          <div><div class="m-text">Rất tốt</div><div class="m-sub">vui vẻ</div></div>
+        </button>
+        <div style="display:flex;flex-direction:column;gap:3px;margin-left:4px">
+          <div style="font-size:8px;color:var(--ink4);letter-spacing:.1em;text-transform:uppercase">7 ngày</div>
+          <div class="mood-history" id="moodHistory"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily Todo -->
+    <div class="card">
+      <div class="sec-label">Việc Cần Làm Hôm Nay</div>
+      <div class="todo-input-row">
+        <input type="text" id="todoInput" placeholder="Thêm việc mới..." />
+        <button class="btn btn-sm" id="todoAddBtn" style="border-radius:6px">+</button>
+      </div>
+      <div class="todo-list" id="todoList"></div>
+      <div class="todo-progress" id="todoProgress" style="display:none">
+        <div class="todo-bar"><div class="todo-bar-fill" id="todoBarFill" style="width:0%"></div></div>
+        <span class="todo-pct" id="todoPct">0%</span>
+      </div>
+    </div>
+
+    <!-- Pomodoro -->
+    <div class="card">
+      <div class="sec-label">Pomodoro Focus</div>
+      <div class="pomo-tabs">
+        <button class="pomo-tab active" data-mode="classic">Classic 25/5</button>
+        <button class="pomo-tab" data-mode="deep">Deep 50/10</button>
+        <button class="pomo-tab" data-mode="custom">Tùy chọn</button>
+      </div>
+      <div class="pomo-custom" id="pomoCustom">
+        <div class="c-inp-wrap"><label>Làm (ph)</label><input type="number" id="cWork" value="25" min="1" max="120"></div>
+        <div class="c-inp-wrap"><label>Nghỉ (ph)</label><input type="number" id="cBreak" value="5" min="1" max="60"></div>
+        <button class="btn-ghost" id="applyCustom" style="font-size:10px">Áp dụng</button>
+      </div>
+      <div class="pomo-ring-wrap">
+        <div class="pomo-ring">
+          <svg viewBox="0 0 180 180">
+            <circle class="ring-track" cx="90" cy="90" r="77"/>
+            <circle class="ring-fill" id="ringFill" cx="90" cy="90" r="77" stroke-dasharray="483.81" stroke-dashoffset="0"/>
+          </svg>
+          <div class="pomo-center">
+            <div class="pomo-time" id="pomoTime">25:00</div>
+            <div class="pomo-phase-lbl" id="pomoPhaseLbl">Tập trung</div>
+          </div>
+        </div>
+      </div>
+      <div class="pomo-ctrl">
+        <button class="ctrl-circle" id="pomoReset" title="Đặt lại">↺</button>
+        <button class="ctrl-main" id="pomoStart">Bắt đầu</button>
+        <button class="ctrl-circle" id="pomoSkip" title="Bỏ qua">⇥</button>
+      </div>
+      <!-- Music -->
+      <div class="music-row">
+        <span class="music-label">Nhạc</span>
+        <div class="music-btns" id="musicBtns">
+          <button class="music-btn active" data-sound="off">🔇 Tắt</button>
+          <button class="music-btn" data-sound="rain">🌧️ Mưa</button>
+          <button class="music-btn" data-sound="wave">🌊 Sóng</button>
+          <button class="music-btn" data-sound="wind">🍃 Gió</button>
+        </div>
+        <input type="range" class="vol-slider" id="volSlider" min="0" max="100" value="40">
+      </div>
+      <div class="pomo-stats">
+        <div class="pstat"><div class="pstat-n" id="stToday">0</div><div class="pstat-l">Hôm nay</div></div>
+        <div class="pstat"><div class="pstat-n" id="stTotal">0</div><div class="pstat-l">Tổng cộng</div></div>
+        <div class="pstat"><div class="pstat-n" id="stXp">0</div><div class="pstat-l">XP hôm nay</div></div>
+      </div>
+    </div>
+
+    <!-- Journal -->
+    <div class="card">
+      <div class="sec-label">Nhật Ký Hàng Ngày</div>
+      <div class="journal-top">
+        <div class="journal-date-lbl" id="journalDateLbl">&mdash;</div>
+        <button class="btn-ghost" id="journalNewDay" style="font-size:10px;padding:3px 10px">Ngày mới</button>
+      </div>
+      <textarea class="journal-textarea" id="journalText" placeholder="Hôm nay bạn cảm thấy thế nào...&#10;Điều gì đã xảy ra?&#10;Bạn biết ơn điều gì?"></textarea>
+      <div class="journal-actions">
+        <span class="journal-char" id="journalChar">0 ký tự</span>
+        <div style="display:flex;gap:5px">
+          <button class="btn-ghost" id="journalViewAll" style="font-size:10px;padding:4px 10px">Xem tất cả</button>
+          <button class="btn" id="journalSave" style="border-radius:6px;padding:6px 14px">Lưu lại</button>
+        </div>
+      </div>
+      <div class="journal-entries" id="journalEntries"></div>
+    </div>
+  </main>
+
+  <!-- RIGHT — Engawa: Reflection & Growth -->
+  <aside class="col-right">
+
+    <!-- Streak -->
+    <div>
+      <div class="sec-label">Chuỗi Ngày</div>
+      <div class="streak-block">
+        <div style="font-size:1.2rem;margin-bottom:3px">🔥</div>
+        <div class="streak-n" id="streakN">0</div>
+        <div class="streak-l">Ngày liên tiếp</div>
+        <div class="streak-max" id="streakMax">Cao nhất: 0 ngày</div>
+      </div>
+    </div>
+
+    <!-- Events -->
+    <div>
+      <div class="sec-label">Sự Kiện &amp; Đếm Ngược</div>
+      <div class="sel-info" id="selInfo"></div>
+      <div class="ev-add-row">
+        <input type="text" id="evTitle" placeholder="Tên sự kiện..."/>
+        <div style="display:flex;gap:4px"><input type="date" id="evDate"/><button class="btn btn-rose btn-sm" id="addEvBtn" style="border-radius:6px;white-space:nowrap">+ Thêm</button></div>
+        <textarea id="evNote" placeholder="Ghi chú..."></textarea>
+      </div>
+      <div class="ev-list" id="evList"></div>
+    </div>
+
+    <!-- Monthly Goals -->
+    <div>
+      <div class="sec-label">Mục Tiêu Tháng</div>
+      <div class="goal-month-nav">
+        <button class="cal-nav-btn" id="goalPrev" style="width:22px;height:22px;font-size:11px">&#8249;</button>
+        <span class="goal-month-lbl" id="goalMonthLbl"></span>
+        <button class="cal-nav-btn" id="goalNext" style="width:22px;height:22px;font-size:11px">&#8250;</button>
+      </div>
+      <div class="goal-input-row">
+        <input type="text" id="goalInput" placeholder="Thêm mục tiêu..." style="font-size:12px"/>
+        <button class="btn btn-sm" id="goalAddBtn" style="border-radius:6px">+</button>
+      </div>
+      <div class="goal-list" id="goalList"></div>
+    </div>
+
+    <!-- Monthly Reflection -->
+    <div>
+      <div class="sec-label">Nhìn Lại Tháng</div>
+      <div class="reflect-prompt">Tháng này bạn đã trưởng thành thế nào? Điều gì đáng nhớ? Bài học nào quan trọng?</div>
+      <textarea class="reflect-textarea" id="reflectText" placeholder="Viết suy nghĩ của bạn..."></textarea>
+      <div style="display:flex;justify-content:flex-end">
+        <button class="btn btn-sm" id="reflectSave" style="border-radius:6px">Lưu</button>
+      </div>
+      <div class="reflect-saved" id="reflectSaved"></div>
+    </div>
+
+    <!-- Badges -->
+    <div>
+      <div class="sec-label">Huy Hiệu</div>
+      <div class="badges-grid" id="badgesGrid"></div>
+    </div>
+
+    <!-- Session Log -->
+    <div>
+      <div class="sec-label">Nhật Ký Session</div>
+      <div class="log-scroll" id="logScroll"><div class="empty">Chưa có session nào.</div></div>
+    </div>
+  </aside>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Level Up Overlay -->
+<div class="overlay-bg" id="lvOverlay">
+  <div class="overlay-box">
+    <div class="lv-emoji">🌿</div>
+    <div class="lv-title">Lên cấp</div>
+    <div class="lv-num" id="lvNum">2</div>
+    <div class="lv-sub" id="lvSub">Bạn đang tiến bộ!</div>
+    <div class="lv-close" onclick="closeLv()">nhấn để tiếp tục</div>
+  </div>
+</div>
+
+<!-- Journal Expanded -->
+<div class="overlay-bg" id="jExpanded">
+  <div class="j-expanded-box">
+    <div class="j-exp-header">
+      <div class="j-exp-title">Tất cả nhật ký</div>
+      <button class="j-exp-close" onclick="document.getElementById('jExpanded').classList.remove('show')">×</button>
+    </div>
+    <div class="j-exp-full" id="jExpFull"></div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════
+   LUNAR CALENDAR
+   ═══════════════════════════════════ */
+const CAN=['Giáp','Ất','Bính','Đinh','Mậu','Kỷ','Canh','Tân','Nhâm','Quý'];
+const CHI=['Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi'];
+const THANG=['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+const THU=['CN','T2','T3','T4','T5','T6','T7'];
+const THUFULL=['Chủ nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
+const TZ=7;
+function canChi(y){return CAN[(y+6)%10]+' '+CHI[(y+8)%12]}
+function jdFromDate(d,m,y){let a=Math.floor((14-m)/12),yr=y+4800-a,mo=m+12*a-3,jd=d+Math.floor((153*mo+2)/5)+365*yr+Math.floor(yr/4)-Math.floor(yr/100)+Math.floor(yr/400)-32045;if(jd<2299161)jd=d+Math.floor((153*mo+2)/5)+365*yr+Math.floor(yr/4)-32083;return jd}
+function newMoon(k,tz){let T=k/1236.85,T2=T*T,T3=T2*T,dr=Math.PI/180,Jd=2415020.75933+29.53058868*k+.0001178*T2-.000000155*T3;Jd+=.00033*Math.sin((166.56+132.87*T-.009173*T2)*dr);let M=359.2242+29.10535608*k-.0000333*T2-.00000347*T3,Mp=306.0253+385.81691806*k+.0107306*T2+.00001236*T3,F=21.2964+390.67050646*k-.0016528*T2-.00000239*T3,C=(.1734-.000393*T)*Math.sin(M*dr)+.0021*Math.sin(2*dr*M)-.4068*Math.sin(Mp*dr)+.0161*Math.sin(2*dr*Mp)-.0004*Math.sin(3*dr*Mp)+.0104*Math.sin(2*dr*F)-.0051*Math.sin((M+Mp)*dr)-.0074*Math.sin((M-Mp)*dr)+.0004*Math.sin((2*F+M)*dr)-.0004*Math.sin((2*F-M)*dr)-.0006*Math.sin((2*F+Mp)*dr)+.001*Math.sin((2*F-Mp)*dr)+.0005*Math.sin((M+2*Mp)*dr),dt;if(T<-11)dt=.001+.000839*T+.0002261*T2-.00000845*T3-.000000081*T*T3;else dt=-.000278+.000265*T+.000262*T2;return Math.floor(Jd+C-dt+.5+tz/24)}
+function sunLon(jdn,tz){let T=(jdn-2451545.5-tz/24)/36525,T2=T*T,dr=Math.PI/180,M=357.5291+35999.0503*T-.0001559*T2-.00000048*T*T2,L0=280.46646+36000.76983*T+.0003032*T2,DL=(1.9146-.004817*T-.000014*T2)*Math.sin(dr*M)+(.019993-.000101*T)*Math.sin(dr*2*M)+.00029*Math.sin(dr*3*M),L=L0+DL,om=125.04452-1934.136261*T;L=L-.00569-.00478*Math.sin(dr*om);return Math.floor(L/30)%12}
+function getLM11(y,tz){let off=jdFromDate(31,12,y)-2415021,k=Math.floor(off/29.530588853),nm=newMoon(k,tz);if(sunLon(nm,tz)>=9)nm=newMoon(k-1,tz);return nm}
+function getLeapOff(a11,tz){let k=Math.floor((a11-2415021.076998695)/29.530588853+.5),i=1,arc=sunLon(newMoon(k+i,tz),tz),last=0;do{last=arc;i++;arc=sunLon(newMoon(k+i,tz),tz)}while(arc!=last&&i<14);return i-1}
+function sol2lun(d,m,y){let jd=jdFromDate(d,m,y),k=Math.floor((jd-2415021.076998695)/29.530588853),ms=newMoon(k+1,TZ);if(ms>jd)ms=newMoon(k,TZ);let a11=getLM11(y,TZ),b11=a11,ly;if(a11>=ms){ly=y;a11=getLM11(y-1,TZ)}else{ly=y+1;b11=getLM11(y+1,TZ)}let ld=jd-ms+1,diff=Math.floor((ms-a11)/29),leap=false,lm=diff+11;if(b11-a11>365){let loff=getLeapOff(a11,TZ);if(diff>=loff){lm=diff+10;if(diff==loff)leap=true}}if(lm>12)lm-=12;if(lm>=11&&diff<4)ly--;return[ld,lm,ly,leap]}
+
+/* ═══════════════════════════════════
+   QUOTES
+   ═══════════════════════════════════ */
+const QUOTES=[
+  {t:'Mỗi ngày là một trang mới trong cuốn sách cuộc đời.',a:''},
+  {t:'Hãy là phiên bản tốt nhất của chính mình.',a:''},
+  {t:'Gieo hạt giống tích cực, gặt hái niềm vui.',a:''},
+  {t:'Chậm mà chắc, nhẹ mà sâu.',a:'Triết lý Nhật Bản'},
+  {t:'Hãy nở rộ theo cách của riêng bạn.',a:''},
+  {t:'Ngày hôm nay là món quà — hãy trân trọng từng khoảnh khắc.',a:''},
+  {t:'Bước nhỏ mỗi ngày, thay đổi lớn theo thời gian.',a:''},
+  {t:'Sự bình yên bắt đầu từ bên trong.',a:''},
+  {t:'Bạn mạnh mẽ hơn bạn nghĩ rất nhiều.',a:''},
+  {t:'Mỗi bông hoa đều nở vào đúng mùa của nó.',a:''},
+  {t:'Hãy nhẹ nhàng với chính mình — bạn đang cố gắng rồi.',a:''},
+  {t:'Wabi-sabi — vẻ đẹp của sự không hoàn hảo.',a:'Triết lý Nhật Bản'},
+  {t:'Ikigai — tìm lý do để thức dậy mỗi sáng.',a:'Triết lý Nhật Bản'},
+  {t:'Trồng một khu vườn đẹp cần thời gian và kiên nhẫn.',a:''},
+  {t:'Nụ cười là ánh nắng của tâm hồn.',a:''},
+  {t:'Biết ơn biến điều bình thường thành phi thường.',a:''},
+  {t:'Sống như bông hoa — âm thầm nở rộ, lan tỏa hương thơm.',a:''},
+  {t:'Mono no aware — trân trọng vẻ đẹp phù du.',a:'Triết lý Nhật Bản'},
+  {t:'Bạn xứng đáng được yêu thương và hạnh phúc.',a:''},
+  {t:'Mỗi hoàng hôn là lời hứa của một bình minh mới.',a:''},
+  {t:'Tĩnh lặng không phải trống rỗng — mà đầy bình an.',a:''},
+  {t:'Hygge — tìm niềm vui trong điều ấm áp, giản dị.',a:'Triết lý Bắc Âu'},
+  {t:'Điều kỳ diệu nằm trong những thứ giản dị.',a:''},
+  {t:'Sáng tạo mỗi ngày, dù chỉ một điều nhỏ.',a:''},
+];
+let quoteIdx=-1;
+function getGreeting(){const h=new Date().getHours();if(h<12)return'Chào buổi sáng ☀️';if(h<18)return'Chào buổi chiều 🌤️';return'Chào buổi tối 🌙'}
+function showQuote(random){
+  if(random){let n;do{n=Math.floor(Math.random()*QUOTES.length)}while(n===quoteIdx&&QUOTES.length>1);quoteIdx=n}
+  else{quoteIdx=Math.floor((new Date()-new Date(new Date().getFullYear(),0,0))/864e5)%QUOTES.length}
+  const q=QUOTES[quoteIdx];
+  document.getElementById('quoteGreeting').textContent=getGreeting();
+  document.getElementById('quoteText').textContent='「 '+q.t+' 」';
+  document.getElementById('quoteAuthor').textContent=q.a?'— '+q.a:'';
+}
+
+/* ═══════════════════════════════════
+   STATE
+   ═══════════════════════════════════ */
+const LV_NAMES=['Mầm non','Nụ nhỏ','Chồi xanh','Lá non','Cành biếc','Hoa nở','Vườn xanh','Kỳ hoa','Tiên cảnh','Huyền thoại'];
+const BADGES=[
+  {id:'first',icon:'🌱',name:'Bắt đầu',desc:'Pomodoro đầu tiên',cond:s=>s.totalPomos>=1},
+  {id:'p5',icon:'⏱️',name:'5 Session',desc:'5 pomodoros',cond:s=>s.totalPomos>=5},
+  {id:'p25',icon:'🎯',name:'25 Session',desc:'25 pomodoros',cond:s=>s.totalPomos>=25},
+  {id:'p100',icon:'🏆',name:'100 Session',desc:'100 pomodoros',cond:s=>s.totalPomos>=100},
+  {id:'str3',icon:'⚡',name:'3 Ngày',desc:'Streak 3 ngày',cond:s=>s.streak>=3},
+  {id:'str7',icon:'💪',name:'1 Tuần',desc:'Streak 7 ngày',cond:s=>s.streak>=7},
+  {id:'str30',icon:'👑',name:'30 Ngày',desc:'Streak 30 ngày',cond:s=>s.streak>=30},
+  {id:'lv5',icon:'⭐',name:'Level 5',desc:'Đạt level 5',cond:s=>s.level>=5},
+  {id:'lv10',icon:'🌟',name:'Level 10',desc:'Đạt level 10',cond:s=>s.level>=10},
+  {id:'mood7',icon:'🌸',name:'Mood 7',desc:'Check-in 7 ngày',cond:s=>Object.keys(s.moods||{}).length>=7},
+  {id:'j5',icon:'📖',name:'5 Nhật ký',desc:'Viết 5 entries',cond:s=>(s.journals||[]).length>=5},
+  {id:'early',icon:'🌅',name:'Sớm mai',desc:'Session trước 8h',cond:s=>s.earlyBird},
+];
+function xpForLv(lv){return lv*100}
+function lvName(lv){return LV_NAMES[Math.min(lv-1,LV_NAMES.length-1)]}
+function todayStr(){const n=new Date();return n.getFullYear()+'-'+p2(n.getMonth()+1)+'-'+p2(n.getDate())}
+function monthStr(d){d=d||new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)}
+function p2(n){return String(n).padStart(2,'0')}
+
+let ST={level:1,xp:0,totalPomos:0,todayPomos:0,todayXp:0,streak:0,maxStreak:0,lastActiveDate:'',earlyBird:false,earnedBadges:[],sessions:[],events:[],moods:{},journals:[],todos:{},goals:{},reflections:{}};
+let currentUser=null;
+
+function load(){try{const s=localStorage.getItem('vuon_miu_v3');if(s)ST=Object.assign(ST,JSON.parse(s))}catch(e){}if(ST.lastActiveDate&&ST.lastActiveDate!==todayStr()){ST.todayPomos=0;ST.todayXp=0}}
+function save(){try{localStorage.setItem('vuon_miu_v3',JSON.stringify(ST))}catch(e){}}
+
+/* ═══════════════════════════════════
+   AUTH
+   ═══════════════════════════════════ */
+const GOOGLE_CLIENT_ID='YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+function initGoogleAuth(){if(typeof google==='undefined'||!google.accounts){document.getElementById('googleLoginBtn').style.display='';return}try{google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleGoogleResponse,auto_select:true});google.accounts.id.renderButton(document.getElementById('gsiButtonWrap'),{theme:'outline',size:'large',shape:'pill',text:'signin_with',locale:'vi',width:320})}catch(e){document.getElementById('googleLoginBtn').style.display=''}}
+function handleGoogleResponse(r){try{const p=JSON.parse(atob(r.credential.split('.')[1]));currentUser={name:p.name||'',email:p.email||'',picture:p.picture||''};localStorage.setItem('vuon_miu_user',JSON.stringify(currentUser));applyUser();enterApp()}catch(e){showToast('Đăng nhập thất bại')}}
+function applyUser(){if(!currentUser)return;document.getElementById('userName').textContent=currentUser.name.split(' ').pop()||'Bạn';const av=document.getElementById('userAvatar');if(currentUser.picture)av.innerHTML='<img src="'+currentUser.picture+'" alt="">';else av.textContent='🌸';document.getElementById('menuLogin').style.display='none';document.getElementById('menuLogout').style.display=''}
+function loadUser(){try{const u=localStorage.getItem('vuon_miu_user');if(u){currentUser=JSON.parse(u);applyUser()}}catch(e){}}
+function logoutUser(){currentUser=null;localStorage.removeItem('vuon_miu_user');document.getElementById('userName').textContent='Khách';document.getElementById('userAvatar').innerHTML='🌸';document.getElementById('menuLogin').style.display='';document.getElementById('menuLogout').style.display='none';document.getElementById('userMenu').classList.remove('show')}
+function enterApp(){document.getElementById('loginOverlay').classList.add('hidden');document.getElementById('appShell').classList.add('visible')}
+function checkAutoLogin(){try{if(localStorage.getItem('vuon_miu_user')||localStorage.getItem('vuon_miu_guest'))enterApp()}catch(e){}}
+document.getElementById('googleLoginBtn').addEventListener('click',()=>{if(typeof google!=='undefined'&&google.accounts)google.accounts.id.prompt();else showToast('Google Sign-In chưa sẵn sàng')});
+document.getElementById('guestLoginBtn').addEventListener('click',()=>{localStorage.setItem('vuon_miu_guest','1');enterApp()});
+document.getElementById('userProfileBtn').addEventListener('click',()=>document.getElementById('userMenu').classList.toggle('show'));
+document.addEventListener('click',e=>{if(!e.target.closest('#userProfileBtn')&&!e.target.closest('#userMenu'))document.getElementById('userMenu').classList.remove('show')});
+document.getElementById('menuLogin').addEventListener('click',()=>{document.getElementById('loginOverlay').classList.remove('hidden');document.getElementById('userMenu').classList.remove('show')});
+document.getElementById('menuLogout').addEventListener('click',logoutUser);
+
+/* ═══════════════════════════════════
+   CALENDAR
+   ═══════════════════════════════════ */
+const NOW=new Date();let calY=NOW.getFullYear(),calM=NOW.getMonth(),selDate=null;
+function updateHeader(){const d=NOW.getDate(),m=NOW.getMonth()+1,y=NOW.getFullYear();document.getElementById('hdrSolar').textContent=THUFULL[NOW.getDay()]+', '+d+'/'+m+'/'+y;const[ld,lm,ly,ll]=sol2lun(d,m,y);document.getElementById('hdrLunar').textContent=(ll?'[Nhuận] ':'')+ld+' tháng '+lm+' — '+canChi(ly)}
+function hasEv(y,m,d){return ST.events.some(e=>{const dt=new Date(e.date);return dt.getFullYear()===y&&dt.getMonth()===m&&dt.getDate()===d})}
+function renderCal(){document.getElementById('calLbl').textContent=THANG[calM]+' '+calY;const g=document.getElementById('calGrid');g.innerHTML='';THU.forEach((t,i)=>{const el=document.createElement('div');el.className='cal-dlbl'+(i===0?' cn':'');el.textContent=t;g.appendChild(el)});const first=new Date(calY,calM,1).getDay(),days=new Date(calY,calM+1,0).getDate();for(let i=0;i<first;i++){const el=document.createElement('div');el.className='cell empty';g.appendChild(el)}for(let day=1;day<=days;day++){const[ld]=sol2lun(day,calM+1,calY);const isT=day===NOW.getDate()&&calM===NOW.getMonth()&&calY===NOW.getFullYear();const isSun=new Date(calY,calM,day).getDay()===0;const isSel=selDate&&selDate.d===day&&selDate.m===calM&&selDate.y===calY;const hasE=hasEv(calY,calM,day);let cls='cell';if(isT)cls+=' today';if(isSun)cls+=' sun';if(isSel&&!isT)cls+=' sel';if(hasE)cls+=' has-ev';const el=document.createElement('div');el.className=cls;el.innerHTML='<span class="csol">'+day+'</span><span class="clun">'+ld+'</span>';el.addEventListener('click',()=>pickDate(day,calM,calY));g.appendChild(el)}}
+function pickDate(d,m,y){selDate={d,m,y};const[ld,lm,ly,ll]=sol2lun(d,m+1,y);document.getElementById('selInfo').textContent=d+'/'+(m+1)+'/'+y+' · Âm: '+ld+'/'+lm+(ll?' nhuận':'')+' — '+canChi(ly);document.getElementById('selInfo').style.display='block';document.getElementById('evDate').value=y+'-'+p2(m+1)+'-'+p2(d);renderCal()}
+document.getElementById('prevM').addEventListener('click',()=>{calM--;if(calM<0){calM=11;calY--}renderCal()});
+document.getElementById('nextM').addEventListener('click',()=>{calM++;if(calM>11){calM=0;calY++}renderCal()});
+document.getElementById('convBtn').addEventListener('click',()=>{const v=document.getElementById('convIn').value;if(!v)return;const[y,m,d]=v.split('-').map(Number);const[ld,lm,ly,ll]=sol2lun(d,m,y);const r=document.getElementById('convOut');r.innerHTML='<div style="font-size:11px;color:var(--ink3);margin-bottom:4px">Kết quả chuyển đổi</div><div>Âm lịch: <strong>'+ld+'/'+lm+(ll?' (nhuận)':'')+'</strong></div><div>Năm: <strong>'+canChi(ly)+'</strong> ('+ly+')</div>';r.style.display='block'});
+
+/* ═══════════════════════════════════
+   MOOD
+   ═══════════════════════════════════ */
+function renderMoodHistory(){const el=document.getElementById('moodHistory');el.innerHTML='';const keys=Object.keys(ST.moods||{}).sort().slice(-7);keys.forEach(k=>{const mood=ST.moods[k],icon=mood==='great'?'🌸':'🌿',pip=document.createElement('div');pip.className='mood-pip '+mood;pip.textContent=icon;pip.setAttribute('data-tip',k.split('-').reverse().join('/')+(mood==='great'?' Rất tốt':' Tốt'));el.appendChild(pip)});if(!keys.length)el.innerHTML='<span style="font-size:10px;color:var(--ink4);font-style:italic">—</span>';const todayMood=ST.moods?ST.moods[todayStr()]:null;const dot=document.getElementById('moodDotToday');dot.className='hud-mood-dot';if(todayMood==='good')dot.classList.add('active-good');if(todayMood==='great')dot.classList.add('active-great')}
+function checkInMood(mood){if(!ST.moods)ST.moods={};ST.moods[todayStr()]=mood;document.querySelectorAll('.mood-btn-mini').forEach(b=>{b.className='mood-btn-mini';if(b.dataset.mood===mood)b.classList.add(mood==='good'?'sel-good':'sel-great')});renderMoodHistory();save();checkBadges();showToast(mood==='great'?'🌸 Rất tốt!':'🌿 Bình yên!');addXP(5)}
+document.getElementById('moodBtnGood').addEventListener('click',()=>checkInMood('good'));
+document.getElementById('moodBtnGreat').addEventListener('click',()=>checkInMood('great'));
+function restoreMoodUI(){const m=ST.moods?ST.moods[todayStr()]:null;if(m)document.querySelectorAll('.mood-btn-mini').forEach(b=>{b.className='mood-btn-mini';if(b.dataset.mood===m)b.classList.add(m==='good'?'sel-good':'sel-great')})}
+
+/* ═══════════════════════════════════
+   DAILY TODO
+   ═══════════════════════════════════ */
+function getTodos(){if(!ST.todos)ST.todos={};if(!ST.todos[todayStr()])ST.todos[todayStr()]=[];return ST.todos[todayStr()]}
+function renderTodos(){const list=document.getElementById('todoList'),todos=getTodos();list.innerHTML='';if(!todos.length){list.innerHTML='<div class="empty">Chưa có việc gì hôm nay...</div>';document.getElementById('todoProgress').style.display='none';return}todos.forEach((t,i)=>{const el=document.createElement('div');el.className='todo-item'+(t.done?' done':'');el.innerHTML='<button class="todo-cb">'+(t.done?'✓':'')+'</button><span class="todo-text">'+escHTML(t.text)+'</span><button class="todo-del">×</button>';el.querySelector('.todo-cb').addEventListener('click',()=>{t.done=!t.done;if(t.done)addXP(3);save();renderTodos()});el.querySelector('.todo-del').addEventListener('click',()=>{todos.splice(i,1);save();renderTodos()});list.appendChild(el)});const done=todos.filter(t=>t.done).length,pct=Math.round(done/todos.length*100);document.getElementById('todoProgress').style.display='flex';document.getElementById('todoBarFill').style.width=pct+'%';document.getElementById('todoPct').textContent=pct+'%'}
+document.getElementById('todoAddBtn').addEventListener('click',addTodo);
+document.getElementById('todoInput').addEventListener('keydown',e=>{if(e.key==='Enter')addTodo()});
+function addTodo(){const inp=document.getElementById('todoInput'),text=inp.value.trim();if(!text)return;getTodos().push({text,done:false});save();renderTodos();inp.value=''}
+
+/* ═══════════════════════════════════
+   JOURNAL
+   ═══════════════════════════════════ */
+function escHTML(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function renderJournalDateLbl(){const d=NOW.getDate(),m=NOW.getMonth()+1,y=NOW.getFullYear();document.getElementById('journalDateLbl').textContent=THUFULL[NOW.getDay()]+', '+d+'/'+m+'/'+y}
+function renderJournalEntries(){const el=document.getElementById('journalEntries');el.innerHTML='';const entries=[...(ST.journals||[])].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,8);if(!entries.length){el.innerHTML='<div class="empty">Chưa có nhật ký nào...</div>';return}entries.forEach(j=>{const card=document.createElement('div');card.className='journal-entry';const mi=j.mood==='great'?'🌸':j.mood==='good'?'🌿':'';const[dy,dm,dd]=j.date.split('-');card.innerHTML='<div class="j-entry-date">'+dd+'/'+dm+'/'+dy+'</div><div class="j-entry-text">'+escHTML(j.text)+'</div>'+(mi?'<span class="j-entry-mood">'+mi+'</span>':'')+'<button class="j-entry-del" data-date="'+j.date+'">×</button>';card.addEventListener('click',e=>{if(e.target.classList.contains('j-entry-del'))return;const[y2,m2,d2]=j.date.split('-');document.getElementById('jExpFull').textContent=THUFULL[new Date(j.date).getDay()]+', '+d2+'/'+m2+'/'+y2+'\n\n'+j.text;document.getElementById('jExpanded').classList.add('show')});el.appendChild(card)});el.querySelectorAll('.j-entry-del').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();ST.journals=(ST.journals||[]).filter(j=>j.date!==btn.dataset.date);save();renderJournalEntries()}))}
+function loadTodayJournal(){const entry=(ST.journals||[]).find(j=>j.date===todayStr());if(entry){document.getElementById('journalText').value=entry.text;document.getElementById('journalChar').textContent=entry.text.length+' ký tự'}}
+const journalTA=document.getElementById('journalText');
+journalTA.addEventListener('input',()=>document.getElementById('journalChar').textContent=journalTA.value.length+' ký tự');
+document.getElementById('journalSave').addEventListener('click',()=>{const text=journalTA.value.trim();if(!text)return;if(!ST.journals)ST.journals=[];const idx=ST.journals.findIndex(j=>j.date===todayStr());const entry={date:todayStr(),text,mood:(ST.moods||{})[todayStr()]||''};if(idx>=0)ST.journals[idx]=entry;else ST.journals.unshift(entry);save();checkBadges();renderJournalEntries();showToast('📖 Đã lưu nhật ký');addXP(10)});
+document.getElementById('journalNewDay').addEventListener('click',()=>{journalTA.value='';document.getElementById('journalChar').textContent='0 ký tự'});
+document.getElementById('journalViewAll').addEventListener('click',()=>{const all=[...(ST.journals||[])].sort((a,b)=>b.date.localeCompare(a.date));if(!all.length){showToast('Chưa có nhật ký');return}document.getElementById('jExpFull').textContent=all.map(j=>{const[y,m,d]=j.date.split('-');return'── '+d+'/'+m+'/'+y+(j.mood==='great'?' 🌸':j.mood==='good'?' 🌿':'')+' ──\n'+j.text}).join('\n\n');document.getElementById('jExpanded').classList.add('show')});
+document.getElementById('jExpanded').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show')});
+
+/* ═══════════════════════════════════
+   POMODORO
+   ═══════════════════════════════════ */
+const MODES={classic:{work:25,brk:5},deep:{work:50,brk:10},custom:{work:25,brk:5}};
+let pomoMode='classic',phase='work',secsLeft=25*60,totalSecs=25*60,running=false,timer=null;
+const CIRC=2*Math.PI*77;
+function setMode(mode){if(running)return;pomoMode=mode;document.querySelectorAll('.pomo-tab').forEach(t=>t.classList.toggle('active',t.dataset.mode===mode));document.getElementById('pomoCustom').classList.toggle('show',mode==='custom');phase='work';resetPomo()}
+function resetPomo(){clearInterval(timer);running=false;const m=MODES[pomoMode];secsLeft=m.work*60;totalSecs=m.work*60;phase='work';updatePomoUI();document.getElementById('pomoStart').textContent='Bắt đầu';document.getElementById('pomoStart').classList.remove('running');document.getElementById('ringFill').classList.remove('break-phase')}
+function updatePomoUI(){const m=Math.floor(secsLeft/60),s=secsLeft%60;document.getElementById('pomoTime').textContent=p2(m)+':'+p2(s);document.getElementById('pomoPhaseLbl').textContent=phase==='work'?'Tập trung':'Nghỉ ngơi';document.getElementById('ringFill').style.strokeDashoffset=CIRC*(1-secsLeft/totalSecs)}
+function startPomo(){if(running){clearInterval(timer);running=false;document.getElementById('pomoStart').textContent='Tiếp tục';document.getElementById('pomoStart').classList.remove('running');return}running=true;document.getElementById('pomoStart').textContent='Tạm dừng';document.getElementById('pomoStart').classList.add('running');if(new Date().getHours()<8)ST.earlyBird=true;timer=setInterval(()=>{secsLeft--;updatePomoUI();if(secsLeft<=0){clearInterval(timer);running=false;document.getElementById('pomoStart').classList.remove('running');if(phase==='work'){onPomoComplete();phase='break';const m=MODES[pomoMode];secsLeft=m.brk*60;totalSecs=m.brk*60;document.getElementById('ringFill').classList.add('break-phase');document.getElementById('pomoStart').textContent='Bắt đầu nghỉ';updatePomoUI()}else{phase='work';resetPomo()}}},1e3)}
+function onPomoComplete(){const xp=MODES[pomoMode].work>=40?30:20;ST.totalPomos++;ST.todayPomos++;ST.todayXp+=xp;const ts=todayStr();if(ST.lastActiveDate!==ts){const diff=ST.lastActiveDate?Math.round((new Date(ts)-new Date(ST.lastActiveDate))/864e5):999;ST.streak=diff===1?ST.streak+1:1;ST.maxStreak=Math.max(ST.maxStreak,ST.streak);ST.lastActiveDate=ts}addXP(xp);addLog('work',xp);updateStats();checkBadges();save()}
+document.querySelectorAll('.pomo-tab').forEach(t=>t.addEventListener('click',()=>setMode(t.dataset.mode)));
+document.getElementById('pomoStart').addEventListener('click',startPomo);
+document.getElementById('pomoReset').addEventListener('click',resetPomo);
+document.getElementById('pomoSkip').addEventListener('click',()=>{clearInterval(timer);running=false;document.getElementById('pomoStart').classList.remove('running');if(phase==='work'){phase='break';const m=MODES[pomoMode];secsLeft=m.brk*60;totalSecs=m.brk*60;document.getElementById('ringFill').classList.add('break-phase');document.getElementById('pomoStart').textContent='Bắt đầu nghỉ';updatePomoUI()}else resetPomo()});
+document.getElementById('applyCustom').addEventListener('click',()=>{const w=Math.max(1,Math.min(120,parseInt(document.getElementById('cWork').value)||25)),b=Math.max(1,Math.min(60,parseInt(document.getElementById('cBreak').value)||5));MODES.custom={work:w,brk:b};resetPomo()});
+
+/* ═══════════════════════════════════
+   AMBIENT MUSIC (Web Audio API)
+   ═══════════════════════════════════ */
+let audioCtx=null,currentSound=null,currentSoundName='off';
+function getAudioCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx}
+function createNoise(type){const ctx=getAudioCtx(),bufSize=2*ctx.sampleRate,buf=ctx.createBuffer(1,bufSize,ctx.sampleRate),data=buf.getChannelData(0);let last=0;for(let i=0;i<bufSize;i++){const w=Math.random()*2-1;if(type==='brown'){data[i]=(last+.02*w)/1.02;last=data[i];data[i]*=3.5}else{data[i]=w}}const src=ctx.createBufferSource();src.buffer=buf;src.loop=true;return src}
+function stopSound(){if(currentSound){try{currentSound.src.stop()}catch(e){}currentSound=null}}
+function playSound(name){stopSound();if(name==='off'){currentSoundName='off';return}const ctx=getAudioCtx(),gain=ctx.createGain();gain.gain.value=document.getElementById('volSlider').value/100*.5;if(name==='rain'){const src=createNoise('brown');const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=800;src.connect(lp);lp.connect(gain);gain.connect(ctx.destination);src.start();currentSound={src,gain}}else if(name==='wave'){const src=createNoise('brown');const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=500;const lfo=ctx.createOscillator();lfo.frequency.value=.08;const lfoGain=ctx.createGain();lfoGain.gain.value=.3;lfo.connect(lfoGain);lfoGain.connect(gain.gain);src.connect(lp);lp.connect(gain);gain.connect(ctx.destination);src.start();lfo.start();currentSound={src,gain,lfo}}else if(name==='wind'){const src=createNoise('white');const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1200;bp.Q.value=.5;const lfo=ctx.createOscillator();lfo.frequency.value=.15;const lfoGain=ctx.createGain();lfoGain.gain.value=200;lfo.connect(lfoGain);lfoGain.connect(bp.frequency);src.connect(bp);bp.connect(gain);gain.connect(ctx.destination);src.start();lfo.start();currentSound={src,gain,lfo}}currentSoundName=name}
+document.getElementById('musicBtns').addEventListener('click',e=>{const btn=e.target.closest('.music-btn');if(!btn)return;document.querySelectorAll('.music-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');playSound(btn.dataset.sound)});
+document.getElementById('volSlider').addEventListener('input',e=>{if(currentSound&&currentSound.gain)currentSound.gain.gain.value=e.target.value/100*.5});
+
+/* ═══════════════════════════════════
+   XP / LEVEL / STATS
+   ═══════════════════════════════════ */
+function addXP(amount){ST.xp+=amount;while(ST.xp>=xpForLv(ST.level)){ST.xp-=xpForLv(ST.level);ST.level++;showLvUp(ST.level)}updateHUD();save();showToast('+'+amount+' XP ✨')}
+function updateHUD(){document.getElementById('lvPill').textContent='Lv.'+ST.level+' '+lvName(ST.level);const n=xpForLv(ST.level);document.getElementById('lvXpFill').style.width=Math.round(ST.xp/n*100)+'%';document.getElementById('lvXpTxt').textContent=ST.xp+'/'+n+' XP'}
+function updateStats(){document.getElementById('stToday').textContent=ST.todayPomos;document.getElementById('stTotal').textContent=ST.totalPomos;document.getElementById('stXp').textContent=ST.todayXp;document.getElementById('streakN').textContent=ST.streak;document.getElementById('streakMax').textContent='Cao nhất: '+ST.maxStreak+' ngày'}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._to);t._to=setTimeout(()=>t.classList.remove('show'),2200)}
+function showLvUp(lv){const subs=['Tiến bộ!','Tuyệt vời!','Chăm chỉ!','Giỏi lắm!','Xuất sắc!','Huyền thoại!'];document.getElementById('lvNum').textContent=lv;document.getElementById('lvSub').textContent=lvName(lv)+' · '+subs[Math.min(Math.floor(lv/3),subs.length-1)];document.getElementById('lvOverlay').classList.add('show')}
+function closeLv(){document.getElementById('lvOverlay').classList.remove('show')}
+function addLog(type,xp){const now=new Date(),t=p2(now.getHours())+':'+p2(now.getMinutes());ST.sessions.unshift({type,label:(type==='work'?'Focus ':'')+MODES[pomoMode].work+'p',time:t,xp:type==='work'?xp:0});if(ST.sessions.length>50)ST.sessions.length=50;renderLog()}
+function renderLog(){const el=document.getElementById('logScroll');if(!ST.sessions.length){el.innerHTML='<div class="empty">Chưa có session nào.</div>';return}el.innerHTML='';ST.sessions.slice(0,15).forEach(s=>{const d=document.createElement('div');d.className='log-row';d.innerHTML='<span class="log-pip'+(s.type==='break'?' brk':'')+'"></span><span class="log-txt">'+s.label+'</span><span class="log-tm">'+s.time+'</span>'+(s.xp?'<span class="log-xp">+'+s.xp+'</span>':'');el.appendChild(d)})}
+function checkBadges(){BADGES.forEach(b=>{if(!ST.earnedBadges.includes(b.id)&&b.cond(ST)){ST.earnedBadges.push(b.id);setTimeout(()=>showToast('🏅 '+b.name+'!'),600);renderBadges();save()}})}
+function renderBadges(){const g=document.getElementById('badgesGrid');g.innerHTML='';BADGES.forEach(b=>{const earned=ST.earnedBadges.includes(b.id),el=document.createElement('div');el.className='badge-item'+(earned?' earned':'');el.setAttribute('data-tip',b.desc);el.innerHTML='<span class="badge-icon">'+b.icon+'</span><span class="badge-name">'+b.name+'</span>';g.appendChild(el)})}
+
+/* ═══════════════════════════════════
+   EVENTS
+   ═══════════════════════════════════ */
+function daysTo(s){let n=new Date();n.setHours(0,0,0,0);let e=new Date(s);e.setHours(0,0,0,0);return Math.round((e-n)/864e5)}
+function renderEvents(){const el=document.getElementById('evList');el.innerHTML='';if(!ST.events.length){el.innerHTML='<div class="empty">Thêm sự kiện nhé...</div>';return}[...ST.events].sort((a,b)=>new Date(a.date)-new Date(b.date)).forEach(ev=>{const days=daysTo(ev.date),dt=new Date(ev.date),[ld,lm,ly,ll]=sol2lun(dt.getDate(),dt.getMonth()+1,dt.getFullYear()),origIdx=ST.events.indexOf(ev);let dn='',dl='',cls='ev-card';if(days>0){dn=days;dl='ngày nữa';cls+=' upcoming'}else if(days===0){dn='✿';dl='Hôm nay!';cls+=' today-ev'}else{dn=Math.abs(days);dl='ngày trước';cls+=' past-ev'}const card=document.createElement('div');card.className=cls;card.innerHTML='<button class="ev-del" data-i="'+origIdx+'">×</button><div class="ev-count"><div class="ev-count-n">'+dn+'</div><div class="ev-count-l">'+dl+'</div></div><div class="ev-meta"><div class="ev-title">'+escHTML(ev.title)+'</div><div class="ev-lunar">'+ld+'/'+lm+(ll?' nhuận':'')+' — '+canChi(ly)+'</div>'+(ev.note?'<div class="ev-note">'+escHTML(ev.note)+'</div>':'')+'</div>';el.appendChild(card)});el.querySelectorAll('.ev-del').forEach(btn=>btn.addEventListener('click',e=>{ST.events.splice(Number(e.currentTarget.dataset.i),1);save();renderEvents();renderCal()}))}
+document.getElementById('addEvBtn').addEventListener('click',()=>{const t=document.getElementById('evTitle').value.trim(),d=document.getElementById('evDate').value,n=document.getElementById('evNote').value.trim();if(!t||!d)return;ST.events.push({title:t,date:d,note:n});save();renderEvents();renderCal();document.getElementById('evTitle').value='';document.getElementById('evDate').value='';document.getElementById('evNote').value='';document.getElementById('selInfo').style.display='none';selDate=null;showToast('📅 Đã thêm')});
+
+/* ═══════════════════════════════════
+   MONTHLY GOALS
+   ═══════════════════════════════════ */
+let goalMonth=monthStr();
+function getGoals(m){if(!ST.goals)ST.goals={};if(!ST.goals[m])ST.goals[m]=[];return ST.goals[m]}
+function renderGoals(){const m=goalMonth,[y,mo]=m.split('-');document.getElementById('goalMonthLbl').textContent=THANG[parseInt(mo)-1]+' '+y;const list=document.getElementById('goalList'),goals=getGoals(m);list.innerHTML='';if(!goals.length){list.innerHTML='<div class="empty">Chưa có mục tiêu...</div>';return}goals.forEach((g,i)=>{const el=document.createElement('div');el.className='goal-item'+(g.done?' done':'');el.innerHTML='<button class="goal-cb">'+(g.done?'✓':'')+'</button><span class="goal-text">'+escHTML(g.text)+'</span><button class="goal-del">×</button>';el.querySelector('.goal-cb').addEventListener('click',()=>{g.done=!g.done;if(g.done)addXP(5);save();renderGoals()});el.querySelector('.goal-del').addEventListener('click',()=>{goals.splice(i,1);save();renderGoals()});list.appendChild(el)})}
+document.getElementById('goalAddBtn').addEventListener('click',addGoal);
+document.getElementById('goalInput').addEventListener('keydown',e=>{if(e.key==='Enter')addGoal()});
+function addGoal(){const inp=document.getElementById('goalInput'),text=inp.value.trim();if(!text)return;getGoals(goalMonth).push({text,done:false});save();renderGoals();inp.value=''}
+document.getElementById('goalPrev').addEventListener('click',()=>{const[y,m]=goalMonth.split('-').map(Number);const d=new Date(y,m-2,1);goalMonth=monthStr(d);renderGoals();loadReflection()});
+document.getElementById('goalNext').addEventListener('click',()=>{const[y,m]=goalMonth.split('-').map(Number);const d=new Date(y,m,1);goalMonth=monthStr(d);renderGoals();loadReflection()});
+
+/* ═══════════════════════════════════
+   MONTHLY REFLECTION
+   ═══════════════════════════════════ */
+function loadReflection(){const m=goalMonth;if(!ST.reflections)ST.reflections={};const text=ST.reflections[m]||'';document.getElementById('reflectText').value=text;document.getElementById('reflectSaved').textContent=text?'Đã lưu cho tháng này':''}
+document.getElementById('reflectSave').addEventListener('click',()=>{if(!ST.reflections)ST.reflections={};const text=document.getElementById('reflectText').value.trim();ST.reflections[goalMonth]=text;save();document.getElementById('reflectSaved').textContent=text?'Đã lưu ✓':'';showToast('💭 Đã lưu suy nghĩ');if(text)addXP(8)});
+
+/* ═══════════════════════════════════
+   INIT
+   ═══════════════════════════════════ */
+document.getElementById('convIn').value=NOW.getFullYear()+'-'+p2(NOW.getMonth()+1)+'-'+p2(NOW.getDate());
+document.getElementById('quoteRefresh').addEventListener('click',()=>showQuote(true));
+
+load();loadUser();
+updateHeader();renderCal();renderEvents();renderBadges();renderLog();
+updateHUD();updateStats();updatePomoUI();
+renderMoodHistory();restoreMoodUI();renderJournalEntries();renderJournalDateLbl();
+loadTodayJournal();renderTodos();renderGoals();loadReflection();showQuote(false);
+checkAutoLogin();
+window.addEventListener('load',()=>setTimeout(initGoogleAuth,500));
+</script>
+</body>
+</html>
