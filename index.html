@@ -26,7 +26,7 @@
   --ease:cubic-bezier(.4,0,.2,1);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:15px;scroll-behavior:smooth}
+html{font-size:16px;scroll-behavior:smooth}
 body{background:var(--paper);color:var(--ink);font-family:var(--font-b);min-height:100vh;line-height:1.55;-webkit-font-smoothing:antialiased}
 
 /* ═══ LOGIN ═══ */
@@ -48,7 +48,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--font-b);min-heig
 .login-footer{margin-top:1.5rem;font-size:10.5px;color:var(--ink4);font-family:var(--font-h);font-style:italic}
 
 /* ═══ LAYOUT — Japanese House ═══ */
-.app-shell{display:grid;grid-template-columns:320px 1fr 340px;grid-template-rows:56px 1fr;height:100vh;overflow:hidden;opacity:0;transition:opacity .5s var(--ease)}
+.app-shell{display:grid;grid-template-columns:360px 1fr 380px;grid-template-rows:56px 1fr;height:100vh;overflow:hidden;opacity:0;transition:opacity .5s var(--ease)}
 .app-shell.visible{opacity:1}
 
 /* ═══ TOPBAR ═══ */
@@ -59,8 +59,8 @@ body{background:var(--paper);color:var(--ink);font-family:var(--font-b);min-heig
 .brand-name em{font-style:normal;color:var(--sage);font-weight:700}
 .brand-sub{font-size:8.5px;color:var(--ink3);letter-spacing:.2em;text-transform:uppercase;margin-left:1px}
 .topbar-center{text-align:center}
-.tb-date{font-family:var(--font-h);font-size:.88rem;color:var(--ink2)}
-.tb-lunar{font-size:9.5px;color:var(--ink3);font-family:var(--font-h);font-style:italic}
+.tb-date{font-family:var(--font-h);font-size:1.05rem;font-weight:600;color:var(--ink)}
+.tb-lunar{font-size:11px;color:var(--ink2);font-family:var(--font-h);font-style:italic}
 .hud{display:flex;align-items:center;gap:12px}
 .hud-mood-dot{width:7px;height:7px;border-radius:50%;background:var(--linen2);border:1.5px solid transparent;transition:all .2s}
 .hud-mood-dot.active-good{background:var(--sage);border-color:var(--sage2)}
@@ -87,14 +87,14 @@ body{background:var(--paper);color:var(--ink);font-family:var(--font-b);min-heig
 .col-right{border-left:1px solid var(--linen);overflow-y:auto;padding:1.25rem 1rem;background:var(--white);display:flex;flex-direction:column;gap:1.1rem}
 
 /* ═══ SHARED ═══ */
-.sec-label{font-size:8.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink3);font-weight:600;margin-bottom:.7rem;display:flex;align-items:center;gap:8px}
+.sec-label{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink2);font-weight:600;margin-bottom:.7rem;display:flex;align-items:center;gap:8px}
 .sec-label::after{content:'';flex:1;height:1px;background:var(--linen)}
 .card{background:var(--white);border:1px solid var(--linen);border-radius:var(--radius2);padding:1.25rem;box-shadow:var(--shadow);transition:box-shadow .3s var(--ease)}
-input[type=date],input[type=text],input[type=number],textarea,select{background:var(--paper2);border:1px solid var(--linen);color:var(--ink);border-radius:var(--radius);padding:7px 10px;font-family:var(--font-b);font-size:12.5px;outline:none;transition:border-color .15s,background .15s;width:100%}
+input[type=date],input[type=text],input[type=number],textarea,select{background:var(--paper2);border:1px solid var(--linen);color:var(--ink);border-radius:var(--radius);padding:8px 12px;font-family:var(--font-b);font-size:13.5px;outline:none;transition:border-color .15s,background .15s;width:100%}
 input:focus,textarea:focus,select:focus{border-color:var(--sage);background:var(--white)}
 input[type=date]{width:auto;flex:1}
 textarea{resize:none;line-height:1.6}
-.btn{background:var(--sage);color:white;border:none;border-radius:99px;padding:7px 16px;font-family:var(--font-b);font-size:11.5px;font-weight:500;cursor:pointer;transition:all .2s var(--ease);letter-spacing:.04em;white-space:nowrap}
+.btn{background:var(--sage);color:white;border:none;border-radius:99px;padding:8px 18px;font-family:var(--font-b);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s var(--ease);letter-spacing:.04em;white-space:nowrap}
 .btn:hover{background:var(--sage2);transform:translateY(-1px)}
 .btn:active{transform:translateY(0)}
 .btn-sm{padding:5px 12px;font-size:10.5px}
@@ -107,7 +107,7 @@ textarea{resize:none;line-height:1.6}
 /* ═══ QUOTE — Kakejiku (small scroll) ═══ */
 .quote-strip{padding:.85rem 1rem;background:linear-gradient(135deg,var(--mint4) 0%,var(--paper) 70%,var(--blush) 100%);border:1px solid var(--mint2);border-radius:var(--radius2);text-align:center;margin-bottom:.25rem}
 .quote-greeting{font-size:10px;color:var(--ink3);letter-spacing:.08em;font-family:var(--font-h);font-style:italic}
-.quote-text{font-family:var(--font-h);font-size:1rem;font-weight:500;color:var(--ink);line-height:1.5;margin-top:3px}
+.quote-text{font-family:var(--font-h);font-size:1.05rem;font-weight:600;color:var(--ink);line-height:1.5;margin-top:3px}
 .quote-footer{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:4px}
 .quote-author{font-size:10px;color:var(--sage2);font-family:var(--font-h);font-style:italic}
 .quote-refresh{background:none;border:none;color:var(--ink4);font-size:12px;cursor:pointer;padding:2px;transition:color .2s}
@@ -117,7 +117,7 @@ textarea{resize:none;line-height:1.6}
 .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
 .cal-nav-btn{width:26px;height:26px;background:none;border:1px solid var(--linen);border-radius:50%;cursor:pointer;color:var(--ink3);font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .cal-nav-btn:hover{border-color:var(--sage);color:var(--sage)}
-.cal-month-lbl{font-family:var(--font-h);font-size:.9rem;color:var(--ink2)}
+.cal-month-lbl{font-family:var(--font-h);font-size:1rem;font-weight:600;color:var(--ink)}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
 .cal-dlbl{text-align:center;font-size:8.5px;color:var(--ink4);padding:3px 0;font-weight:600;letter-spacing:.06em}
 .cal-dlbl.cn{color:var(--rose)}
@@ -131,8 +131,8 @@ textarea{resize:none;line-height:1.6}
 .cell.has-ev::after{content:'';position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:3px;height:3px;border-radius:50%;background:var(--rose)}
 .cell.sun .csol{color:var(--rose)}
 .cell.today.sun .csol{color:white}
-.csol{font-size:11.5px;color:var(--ink);line-height:1}
-.clun{font-size:8px;color:var(--ink4);line-height:1.2;margin-top:1px}
+.csol{font-size:13px;color:var(--ink);line-height:1;font-weight:500}
+.clun{font-size:9px;color:var(--ink3);line-height:1.2;margin-top:1px}
 
 /* ═══ DATE CONVERTER ═══ */
 .convert-box{margin-top:1rem;padding:.85rem;background:var(--paper2);border-radius:var(--radius);border:1px solid var(--linen)}
@@ -146,8 +146,8 @@ textarea{resize:none;line-height:1.6}
 .mood-btn-mini.sel-good{border-color:var(--sage);background:var(--mint4)}
 .mood-btn-mini.sel-great{border-color:var(--rose);background:var(--blush)}
 .mood-btn-mini .m-icon{font-size:1.3rem}
-.mood-btn-mini .m-text{font-size:12px;color:var(--ink2);font-weight:500}
-.mood-btn-mini .m-sub{font-size:9.5px;color:var(--ink3);font-family:var(--font-h);font-style:italic}
+.mood-btn-mini .m-text{font-size:14px;color:var(--ink);font-weight:500}
+.mood-btn-mini .m-sub{font-size:11px;color:var(--ink3);font-family:var(--font-h);font-style:italic}
 .mood-history{display:flex;gap:4px;flex-wrap:wrap}
 .mood-pip{width:22px;height:22px;border-radius:50%;border:1px solid var(--linen);display:flex;align-items:center;justify-content:center;font-size:9px;position:relative;transition:transform .15s}
 .mood-pip:hover{transform:scale(1.15)}
@@ -166,7 +166,7 @@ textarea{resize:none;line-height:1.6}
 .todo-cb{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--linen2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;color:transparent;transition:all .15s;flex-shrink:0;padding:0}
 .todo-cb:hover{border-color:var(--sage)}
 .todo-item.done .todo-cb{background:var(--sage);border-color:var(--sage);color:white}
-.todo-text{flex:1;font-size:12.5px;color:var(--ink)}
+.todo-text{flex:1;font-size:14px;color:var(--ink)}
 .todo-del{background:none;border:none;color:var(--ink4);cursor:pointer;font-size:12px;opacity:0;transition:opacity .15s;padding:2px}
 .todo-item:hover .todo-del{opacity:1}
 .todo-progress{display:flex;align-items:center;gap:8px;margin-top:6px}
@@ -244,7 +244,7 @@ textarea{resize:none;line-height:1.6}
 .ev-count-n{font-family:var(--font-h);font-size:1.25rem;color:var(--sage3);line-height:1}
 .ev-count-l{font-size:8px;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase}
 .ev-meta{flex:1;min-width:0}
-.ev-title{font-size:12px;color:var(--ink);font-weight:500}
+.ev-title{font-size:13.5px;color:var(--ink);font-weight:500}
 .ev-lunar{font-size:10px;color:var(--sage2);font-family:var(--font-h);font-style:italic;margin-top:1px}
 .ev-note{font-size:10.5px;color:var(--ink3);margin-top:1px}
 .ev-del{position:absolute;top:5px;right:6px;background:none;border:none;color:var(--ink4);cursor:pointer;font-size:12px;opacity:0;transition:opacity .15s}
@@ -253,9 +253,9 @@ textarea{resize:none;line-height:1.6}
 
 /* ═══ STREAK ═══ */
 .streak-block{text-align:center;padding:1rem .75rem;background:linear-gradient(135deg,var(--mint4),var(--paper));border:1px solid var(--mint2);border-radius:var(--radius2)}
-.streak-n{font-family:var(--font-h);font-size:2.25rem;font-weight:700;color:var(--sage3);line-height:1}
-.streak-l{font-size:8.5px;color:var(--ink3);letter-spacing:.18em;text-transform:uppercase;margin-top:3px}
-.streak-max{font-size:10px;color:var(--ink3);margin-top:4px;font-family:var(--font-h);font-style:italic}
+.streak-n{font-family:var(--font-h);font-size:2.5rem;font-weight:700;color:var(--sage3);line-height:1}
+.streak-l{font-size:10px;color:var(--ink2);letter-spacing:.18em;text-transform:uppercase;margin-top:3px}
+.streak-max{font-size:11px;color:var(--ink2);margin-top:4px;font-family:var(--font-h);font-style:italic}
 
 /* ═══ MONTHLY GOALS ═══ */
 .goal-input-row{display:flex;gap:5px;margin-bottom:6px}
@@ -264,16 +264,21 @@ textarea{resize:none;line-height:1.6}
 .goal-item.done .goal-text{text-decoration:line-through;color:var(--ink3)}
 .goal-cb{width:14px;height:14px;border-radius:3px;border:1.5px solid var(--linen2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:8px;color:transparent;transition:all .15s;flex-shrink:0;padding:0}
 .goal-item.done .goal-cb{background:var(--sage);border-color:var(--sage);color:white}
-.goal-text{flex:1;font-size:11.5px;color:var(--ink)}
+.goal-text{flex:1;font-size:13px;color:var(--ink)}
 .goal-del{background:none;border:none;color:var(--ink4);cursor:pointer;font-size:11px;opacity:0;transition:opacity .15s;padding:1px}
 .goal-item:hover .goal-del{opacity:1}
 .goal-month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.goal-month-lbl{font-family:var(--font-h);font-size:.85rem;color:var(--ink2)}
+.goal-month-lbl{font-family:var(--font-h);font-size:1rem;font-weight:600;color:var(--ink)}
 
 /* ═══ MONTHLY REFLECTION ═══ */
-.reflect-prompt{font-size:11px;color:var(--ink3);font-family:var(--font-h);font-style:italic;margin-bottom:6px;line-height:1.5}
-.reflect-textarea{height:80px;font-size:12px;font-family:var(--font-h);line-height:1.7;margin-bottom:6px}
-.reflect-saved{font-size:10.5px;color:var(--sage2);font-family:var(--font-h);font-style:italic;margin-top:4px}
+.reflect-prompt{font-size:12px;color:var(--ink2);font-family:var(--font-h);font-style:italic;margin-bottom:8px;line-height:1.5}
+.reflect-textarea{height:90px;font-size:13px;font-family:var(--font-h);line-height:1.7;margin-bottom:6px}
+.reflect-saved{font-size:11px;color:var(--sage2);font-family:var(--font-h);font-style:italic;margin-top:4px}
+.reflect-history{margin-top:8px;display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto}
+.reflect-entry{padding:8px 10px;background:var(--paper2);border:1px solid var(--linen);border-radius:6px;cursor:pointer;transition:all .12s}
+.reflect-entry:hover{border-color:var(--linen2)}
+.reflect-entry-date{font-size:10px;color:var(--ink3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;font-weight:500}
+.reflect-entry-text{font-family:var(--font-h);font-size:12px;color:var(--ink);line-height:1.5;white-space:pre-wrap;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
 /* ═══ BADGES ═══ */
 .badges-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
@@ -282,7 +287,7 @@ textarea{resize:none;line-height:1.6}
 .badge-item.earned:hover{transform:scale(1.08)}
 .badge-icon{font-size:1rem;filter:grayscale(1);opacity:.3}
 .badge-item.earned .badge-icon{filter:none;opacity:1}
-.badge-name{font-size:7px;color:var(--ink4);text-align:center;line-height:1.1;font-family:var(--font-jp)}
+.badge-name{font-size:9px;color:var(--ink3);text-align:center;line-height:1.1;font-family:var(--font-jp)}
 .badge-item.earned .badge-name{color:var(--sage3);font-weight:700}
 .badge-item:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:var(--ink);color:white;font-size:9px;padding:2px 6px;border-radius:3px;white-space:nowrap;z-index:99;font-family:var(--font-b)}
 
@@ -565,10 +570,11 @@ textarea{resize:none;line-height:1.6}
       <div class="sec-label">Nhìn Lại Tháng</div>
       <div class="reflect-prompt">Tháng này bạn đã trưởng thành thế nào? Điều gì đáng nhớ? Bài học nào quan trọng?</div>
       <textarea class="reflect-textarea" id="reflectText" placeholder="Viết suy nghĩ của bạn..."></textarea>
-      <div style="display:flex;justify-content:flex-end">
-        <button class="btn btn-sm" id="reflectSave" style="border-radius:6px">Lưu</button>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="reflect-saved" id="reflectSaved"></div>
+        <button class="btn btn-sm" id="reflectSave" style="border-radius:6px">Lưu suy nghĩ</button>
       </div>
-      <div class="reflect-saved" id="reflectSaved"></div>
+      <div class="reflect-history" id="reflectHistory"></div>
     </div>
 
     <!-- Badges -->
@@ -952,8 +958,9 @@ document.getElementById('goalNext').addEventListener('click',()=>{const[y,m]=goa
 /* ═══════════════════════════════════
    MONTHLY REFLECTION
    ═══════════════════════════════════ */
-function loadReflection(){const m=goalMonth;if(!ST.reflections)ST.reflections={};const text=ST.reflections[m]||'';document.getElementById('reflectText').value=text;document.getElementById('reflectSaved').textContent=text?'Đã lưu cho tháng này':''}
-document.getElementById('reflectSave').addEventListener('click',()=>{if(!ST.reflections)ST.reflections={};const text=document.getElementById('reflectText').value.trim();ST.reflections[goalMonth]=text;save();document.getElementById('reflectSaved').textContent=text?'Đã lưu ✓':'';showToast('💭 Đã lưu suy nghĩ');if(text)addXP(8)});
+function loadReflection(){const m=goalMonth;if(!ST.reflections)ST.reflections={};const text=ST.reflections[m]||'';document.getElementById('reflectText').value=text;document.getElementById('reflectSaved').textContent=text?'✓ Đã lưu cho tháng này':'';renderReflectHistory()}
+function renderReflectHistory(){const el=document.getElementById('reflectHistory');if(!ST.reflections)ST.reflections={};const entries=Object.entries(ST.reflections).filter(([k,v])=>v&&v.trim()).sort((a,b)=>b[0].localeCompare(a[0]));el.innerHTML='';if(!entries.length){el.innerHTML='<div class="empty">Chưa có suy nghĩ nào...</div>';return}entries.slice(0,6).forEach(([month,text])=>{const[y,m]=month.split('-');const card=document.createElement('div');card.className='reflect-entry'+(month===goalMonth?' style="border-left:2px solid var(--sage)"':'');card.innerHTML='<div class="reflect-entry-date">'+THANG[parseInt(m)-1]+' '+y+'</div><div class="reflect-entry-text">'+escHTML(text)+'</div>';card.addEventListener('click',()=>{const[gy,gm]=month.split('-').map(Number);goalMonth=month;renderGoals();loadReflection()});el.appendChild(card)})}
+document.getElementById('reflectSave').addEventListener('click',()=>{if(!ST.reflections)ST.reflections={};const text=document.getElementById('reflectText').value.trim();if(!text){showToast('Viết gì đó đã nhé~');return}ST.reflections[goalMonth]=text;save();document.getElementById('reflectSaved').textContent='✓ Đã lưu!';renderReflectHistory();showToast('💭 Đã lưu suy nghĩ');if(text)addXP(8)});
 
 /* ═══════════════════════════════════
    INIT
