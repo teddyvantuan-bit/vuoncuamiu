@@ -48,7 +48,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--font-b);min-heig
 .login-footer{margin-top:1.5rem;font-size:10.5px;color:var(--ink4);font-family:var(--font-h);font-style:italic}
 
 /* ═══ LAYOUT — Japanese House ═══ */
-.app-shell{display:grid;grid-template-columns:260px 1fr 290px;grid-template-rows:56px 1fr;height:100vh;overflow:hidden;opacity:0;transition:opacity .5s var(--ease)}
+.app-shell{display:grid;grid-template-columns:320px 1fr 340px;grid-template-rows:56px 1fr;height:100vh;overflow:hidden;opacity:0;transition:opacity .5s var(--ease)}
 .app-shell.visible{opacity:1}
 
 /* ═══ TOPBAR ═══ */
@@ -230,7 +230,7 @@ textarea{resize:none;line-height:1.6}
 .journal-entry:hover .j-entry-del{opacity:1}
 .j-entry-mood{position:absolute;top:7px;right:24px;font-size:10px}
 
-/* ═══ EVENTS (right sidebar) ═══ */
+/* ═══ EVENTS (left sidebar) ═══ */
 .ev-add-row{display:flex;flex-direction:column;gap:5px;margin-bottom:6px}
 .ev-add-row input,.ev-add-row textarea{font-size:12px}
 .ev-add-row textarea{height:36px}
@@ -318,6 +318,10 @@ textarea{resize:none;line-height:1.6}
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--linen);border-radius:99px}
+.sync-indicator{font-size:14px;cursor:help;opacity:.4;transition:opacity .3s}
+.sync-indicator.synced{opacity:1}
+.sync-indicator.syncing{animation:syncpulse 1s infinite}
+@keyframes syncpulse{0%,100%{opacity:.4}50%{opacity:1}}
 </style>
 </head>
 <body>
@@ -335,7 +339,7 @@ textarea{resize:none;line-height:1.6}
     </button>
     <div class="login-divider">hoặc</div>
     <button class="guest-btn" id="guestLoginBtn">Tiếp tục không đăng nhập</button>
-    <div class="login-footer">Dữ liệu được lưu ngay trên trình duyệt của bạn.</div>
+    <div class="login-footer">Đăng nhập Google để đồng bộ dữ liệu ☁️<br>Hoặc dùng offline — lưu trên trình duyệt.</div>
   </div>
 </div>
 
@@ -364,6 +368,7 @@ textarea{resize:none;line-height:1.6}
           <div class="lv-xp-txt" id="lvXpTxt">0/100 XP</div>
         </div>
       </div>
+      <span class="sync-indicator" id="syncStatus" title="Đồng bộ đám mây">☁️</span>
       <div style="position:relative">
         <div class="user-profile" id="userProfileBtn">
           <span class="user-name" id="userName">Khách</span>
@@ -408,6 +413,17 @@ textarea{resize:none;line-height:1.6}
       </div>
       <div class="conv-result" id="convOut"></div>
     </div>
+
+    <div style="margin-top:1rem">
+      <div class="sec-label">Sự Kiện &amp; Đếm Ngược</div>
+      <div class="sel-info" id="selInfo"></div>
+      <div class="ev-add-row">
+        <input type="text" id="evTitle" placeholder="Tên sự kiện..."/>
+        <div style="display:flex;gap:4px"><input type="date" id="evDate"/><button class="btn btn-rose btn-sm" id="addEvBtn" style="border-radius:6px;white-space:nowrap">+ Thêm</button></div>
+        <textarea id="evNote" placeholder="Ghi chú..."></textarea>
+      </div>
+      <div class="ev-list" id="evList"></div>
+    </div>
   </aside>
 
   <!-- MAIN — Tatami: Daily Activities -->
@@ -449,6 +465,7 @@ textarea{resize:none;line-height:1.6}
     <!-- Pomodoro -->
     <div class="card">
       <div class="sec-label">Pomodoro Focus</div>
+      <button class="btn-ghost" id="notifBtn" style="font-size:9px;padding:3px 8px;float:right;margin-top:-22px">🔔 Thông báo</button>
       <div class="pomo-tabs">
         <button class="pomo-tab active" data-mode="classic">Classic 25/5</button>
         <button class="pomo-tab" data-mode="deep">Deep 50/10</button>
@@ -484,6 +501,7 @@ textarea{resize:none;line-height:1.6}
           <button class="music-btn" data-sound="rain">🌧️ Mưa</button>
           <button class="music-btn" data-sound="wave">🌊 Sóng</button>
           <button class="music-btn" data-sound="wind">🍃 Gió</button>
+          <button class="music-btn" data-sound="lofi">🎵 Lofi</button>
         </div>
         <input type="range" class="vol-slider" id="volSlider" min="0" max="100" value="40">
       </div>
@@ -525,18 +543,6 @@ textarea{resize:none;line-height:1.6}
         <div class="streak-l">Ngày liên tiếp</div>
         <div class="streak-max" id="streakMax">Cao nhất: 0 ngày</div>
       </div>
-    </div>
-
-    <!-- Events -->
-    <div>
-      <div class="sec-label">Sự Kiện &amp; Đếm Ngược</div>
-      <div class="sel-info" id="selInfo"></div>
-      <div class="ev-add-row">
-        <input type="text" id="evTitle" placeholder="Tên sự kiện..."/>
-        <div style="display:flex;gap:4px"><input type="date" id="evDate"/><button class="btn btn-rose btn-sm" id="addEvBtn" style="border-radius:6px;white-space:nowrap">+ Thêm</button></div>
-        <textarea id="evNote" placeholder="Ghi chú..."></textarea>
-      </div>
-      <div class="ev-list" id="evList"></div>
     </div>
 
     <!-- Monthly Goals -->
@@ -690,20 +696,142 @@ let ST={level:1,xp:0,totalPomos:0,todayPomos:0,todayXp:0,streak:0,maxStreak:0,la
 let currentUser=null;
 
 function load(){try{const s=localStorage.getItem('vuon_miu_v3');if(s)ST=Object.assign(ST,JSON.parse(s))}catch(e){}if(ST.lastActiveDate&&ST.lastActiveDate!==todayStr()){ST.todayPomos=0;ST.todayXp=0}}
-function save(){try{localStorage.setItem('vuon_miu_v3',JSON.stringify(ST))}catch(e){}}
+function save(){
+  try{localStorage.setItem('vuon_miu_v3',JSON.stringify(ST))}catch(e){}
+  if(gAccessToken&&gSheetId){clearTimeout(syncTimeout);syncTimeout=setTimeout(syncToSheets,3000)}
+}
 
+/* ═══ AUTH ═══ */
 /* ═══════════════════════════════════
-   AUTH
+   AUTH & GOOGLE SHEETS
+   ═══════════════════════════════════
+   HƯỚNG DẪN CÀI ĐẶT GOOGLE LOGIN:
+   1. Vào https://console.cloud.google.com/
+   2. Tạo project mới (hoặc chọn project có sẵn)
+   3. Bật "Google Sheets API" và "Google Drive API" trong APIs & Services
+   4. Vào Credentials → Create Credentials → OAuth client ID
+   5. Application type: Web application
+   6. Authorized JavaScript origins: thêm domain của bạn
+      (vd: https://teddyvantuan-bit.github.io)
+   7. Authorized redirect URIs: giống origins
+   8. Copy Client ID và thay YOUR_GOOGLE_CLIENT_ID bên dưới
    ═══════════════════════════════════ */
 const GOOGLE_CLIENT_ID='YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
-function initGoogleAuth(){if(typeof google==='undefined'||!google.accounts){document.getElementById('googleLoginBtn').style.display='';return}try{google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleGoogleResponse,auto_select:true});google.accounts.id.renderButton(document.getElementById('gsiButtonWrap'),{theme:'outline',size:'large',shape:'pill',text:'signin_with',locale:'vi',width:320})}catch(e){document.getElementById('googleLoginBtn').style.display=''}}
-function handleGoogleResponse(r){try{const p=JSON.parse(atob(r.credential.split('.')[1]));currentUser={name:p.name||'',email:p.email||'',picture:p.picture||''};localStorage.setItem('vuon_miu_user',JSON.stringify(currentUser));applyUser();enterApp()}catch(e){showToast('Đăng nhập thất bại')}}
+const GSHEET_NAME='VuonCuaMiu_Data';
+let gAccessToken=null,gSheetId=null,syncTimeout=null;
+function initGoogleAuth(){
+  if(typeof google==='undefined'||!google.accounts){document.getElementById('googleLoginBtn').style.display='';return}
+  try{
+    window.gTokenClient=google.accounts.oauth2.initTokenClient({
+      client_id:GOOGLE_CLIENT_ID,
+      scope:'openid profile email https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file',
+      callback:handleTokenResponse
+    });
+    google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:handleGoogleResponse,auto_select:true});
+    google.accounts.id.renderButton(document.getElementById('gsiButtonWrap'),{theme:'outline',size:'large',shape:'pill',text:'signin_with',locale:'vi',width:320});
+  }catch(e){document.getElementById('googleLoginBtn').style.display=''}
+}
+async function handleTokenResponse(resp){
+  if(resp.error){showToast('Đăng nhập thất bại');return}
+  gAccessToken=resp.access_token;
+  try{
+    const userInfo=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{'Authorization':'Bearer '+gAccessToken}}).then(r=>r.json());
+    currentUser={name:userInfo.name||'',email:userInfo.email||'',picture:userInfo.picture||''};
+    localStorage.setItem('vuon_miu_user',JSON.stringify(currentUser));
+    applyUser();
+    await findOrCreateSheet();
+    const loaded=await loadFromSheets();
+    if(loaded){refreshAllUI();showToast('☁️ Đã đồng bộ từ đám mây')}
+    document.getElementById('syncStatus').className='sync-indicator synced';
+    enterApp();
+  }catch(e){console.error('Auth error:',e);showToast('Lỗi kết nối');enterApp()}
+}
+function handleGoogleResponse(r){
+  try{
+    const p=JSON.parse(atob(r.credential.split('.')[1]));
+    currentUser={name:p.name||'',email:p.email||'',picture:p.picture||''};
+    localStorage.setItem('vuon_miu_user',JSON.stringify(currentUser));
+    applyUser();
+    if(window.gTokenClient){window.gTokenClient.requestAccessToken({prompt:''})}
+    else enterApp();
+  }catch(e){showToast('Đăng nhập thất bại')}
+}
 function applyUser(){if(!currentUser)return;document.getElementById('userName').textContent=currentUser.name.split(' ').pop()||'Bạn';const av=document.getElementById('userAvatar');if(currentUser.picture)av.innerHTML='<img src="'+currentUser.picture+'" alt="">';else av.textContent='🌸';document.getElementById('menuLogin').style.display='none';document.getElementById('menuLogout').style.display=''}
 function loadUser(){try{const u=localStorage.getItem('vuon_miu_user');if(u){currentUser=JSON.parse(u);applyUser()}}catch(e){}}
-function logoutUser(){currentUser=null;localStorage.removeItem('vuon_miu_user');document.getElementById('userName').textContent='Khách';document.getElementById('userAvatar').innerHTML='🌸';document.getElementById('menuLogin').style.display='';document.getElementById('menuLogout').style.display='none';document.getElementById('userMenu').classList.remove('show')}
+function logoutUser(){
+  if(gAccessToken){try{google.accounts.oauth2.revoke(gAccessToken)}catch(e){}gAccessToken=null;gSheetId=null}
+  currentUser=null;localStorage.removeItem('vuon_miu_user');
+  document.getElementById('userName').textContent='Khách';
+  document.getElementById('userAvatar').innerHTML='🌸';
+  document.getElementById('menuLogin').style.display='';
+  document.getElementById('menuLogout').style.display='none';
+  document.getElementById('userMenu').classList.remove('show');
+  document.getElementById('syncStatus').className='sync-indicator';
+}
 function enterApp(){document.getElementById('loginOverlay').classList.add('hidden');document.getElementById('appShell').classList.add('visible')}
 function checkAutoLogin(){try{if(localStorage.getItem('vuon_miu_user')||localStorage.getItem('vuon_miu_guest'))enterApp()}catch(e){}}
-document.getElementById('googleLoginBtn').addEventListener('click',()=>{if(typeof google!=='undefined'&&google.accounts)google.accounts.id.prompt();else showToast('Google Sign-In chưa sẵn sàng')});
+
+async function gFetch(url,opts={}){
+  opts.headers={...opts.headers,'Authorization':'Bearer '+gAccessToken,'Content-Type':'application/json'};
+  const r=await fetch(url,opts);
+  if(!r.ok)throw new Error('API error '+r.status);
+  return r.json();
+}
+
+async function findOrCreateSheet(){
+  const q=encodeURIComponent("name='"+GSHEET_NAME+"' and mimeType='application/vnd.google-apps.spreadsheet' and trashed=false");
+  const search=await gFetch('https://www.googleapis.com/drive/v3/files?q='+q+'&fields=files(id,name)');
+  if(search.files&&search.files.length>0){gSheetId=search.files[0].id}
+  else{
+    const created=await gFetch('https://sheets.googleapis.com/v4/spreadsheets',{
+      method:'POST',body:JSON.stringify({properties:{title:GSHEET_NAME},sheets:[{properties:{title:'AppData'}}]})
+    });
+    gSheetId=created.spreadsheetId;
+    await gFetch('https://sheets.googleapis.com/v4/spreadsheets/'+gSheetId+'/values/AppData!A1:C1?valueInputOption=RAW',{
+      method:'PUT',body:JSON.stringify({values:[['key','value','updated']]})
+    });
+  }
+}
+
+async function syncToSheets(){
+  if(!gAccessToken||!gSheetId)return;
+  const si=document.getElementById('syncStatus');
+  si.className='sync-indicator syncing';si.title='Đang đồng bộ...';
+  try{
+    const data=JSON.stringify(ST);
+    await gFetch('https://sheets.googleapis.com/v4/spreadsheets/'+gSheetId+'/values/AppData!A2:C2?valueInputOption=RAW',{
+      method:'PUT',body:JSON.stringify({values:[['app_state',data,new Date().toISOString()]]})
+    });
+    si.className='sync-indicator synced';si.title='Đã đồng bộ ✓';
+    setTimeout(()=>{si.className='sync-indicator synced'},2000);
+  }catch(e){console.warn('Sync error:',e);si.className='sync-indicator';si.title='Lỗi đồng bộ'}
+}
+
+async function loadFromSheets(){
+  if(!gAccessToken||!gSheetId)return false;
+  try{
+    const res=await gFetch('https://sheets.googleapis.com/v4/spreadsheets/'+gSheetId+'/values/AppData!A2:C2');
+    if(res.values&&res.values[0]&&res.values[0][1]){
+      const data=JSON.parse(res.values[0][1]);
+      ST=Object.assign(ST,data);
+      return true;
+    }
+  }catch(e){console.warn('Load error:',e)}
+  return false;
+}
+
+function refreshAllUI(){
+  updateHeader();renderCal();renderEvents();renderBadges();renderLog();
+  updateHUD();updateStats();updatePomoUI();
+  renderMoodHistory();restoreMoodUI();renderJournalEntries();renderJournalDateLbl();
+  loadTodayJournal();renderTodos();renderGoals();loadReflection();
+}
+
+document.getElementById('googleLoginBtn').addEventListener('click',()=>{
+  if(window.gTokenClient){window.gTokenClient.requestAccessToken({prompt:'consent'})}
+  else if(typeof google!=='undefined'&&google.accounts)google.accounts.id.prompt();
+  else showToast('Google Sign-In chưa sẵn sàng')
+});
 document.getElementById('guestLoginBtn').addEventListener('click',()=>{localStorage.setItem('vuon_miu_guest','1');enterApp()});
 document.getElementById('userProfileBtn').addEventListener('click',()=>document.getElementById('userMenu').classList.toggle('show'));
 document.addEventListener('click',e=>{if(!e.target.closest('#userProfileBtn')&&!e.target.closest('#userMenu'))document.getElementById('userMenu').classList.remove('show')});
@@ -755,6 +883,11 @@ document.getElementById('journalViewAll').addEventListener('click',()=>{const al
 document.getElementById('jExpanded').addEventListener('click',function(e){if(e.target===this)this.classList.remove('show')});
 
 /* ═══════════════════════════════════
+   NOTIFICATIONS
+   ═══════════════════════════════════ */
+function sendNotif(title,body){if(typeof Notification!=='undefined'&&Notification.permission==='granted'){try{new Notification(title,{body,icon:'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>'})}catch(e){}}}
+
+/* ═══════════════════════════════════
    POMODORO
    ═══════════════════════════════════ */
 const MODES={classic:{work:25,brk:5},deep:{work:50,brk:10},custom:{work:25,brk:5}};
@@ -763,13 +896,14 @@ const CIRC=2*Math.PI*77;
 function setMode(mode){if(running)return;pomoMode=mode;document.querySelectorAll('.pomo-tab').forEach(t=>t.classList.toggle('active',t.dataset.mode===mode));document.getElementById('pomoCustom').classList.toggle('show',mode==='custom');phase='work';resetPomo()}
 function resetPomo(){clearInterval(timer);running=false;const m=MODES[pomoMode];secsLeft=m.work*60;totalSecs=m.work*60;phase='work';updatePomoUI();document.getElementById('pomoStart').textContent='Bắt đầu';document.getElementById('pomoStart').classList.remove('running');document.getElementById('ringFill').classList.remove('break-phase')}
 function updatePomoUI(){const m=Math.floor(secsLeft/60),s=secsLeft%60;document.getElementById('pomoTime').textContent=p2(m)+':'+p2(s);document.getElementById('pomoPhaseLbl').textContent=phase==='work'?'Tập trung':'Nghỉ ngơi';document.getElementById('ringFill').style.strokeDashoffset=CIRC*(1-secsLeft/totalSecs)}
-function startPomo(){if(running){clearInterval(timer);running=false;document.getElementById('pomoStart').textContent='Tiếp tục';document.getElementById('pomoStart').classList.remove('running');return}running=true;document.getElementById('pomoStart').textContent='Tạm dừng';document.getElementById('pomoStart').classList.add('running');if(new Date().getHours()<8)ST.earlyBird=true;timer=setInterval(()=>{secsLeft--;updatePomoUI();if(secsLeft<=0){clearInterval(timer);running=false;document.getElementById('pomoStart').classList.remove('running');if(phase==='work'){onPomoComplete();phase='break';const m=MODES[pomoMode];secsLeft=m.brk*60;totalSecs=m.brk*60;document.getElementById('ringFill').classList.add('break-phase');document.getElementById('pomoStart').textContent='Bắt đầu nghỉ';updatePomoUI()}else{phase='work';resetPomo()}}},1e3)}
-function onPomoComplete(){const xp=MODES[pomoMode].work>=40?30:20;ST.totalPomos++;ST.todayPomos++;ST.todayXp+=xp;const ts=todayStr();if(ST.lastActiveDate!==ts){const diff=ST.lastActiveDate?Math.round((new Date(ts)-new Date(ST.lastActiveDate))/864e5):999;ST.streak=diff===1?ST.streak+1:1;ST.maxStreak=Math.max(ST.maxStreak,ST.streak);ST.lastActiveDate=ts}addXP(xp);addLog('work',xp);updateStats();checkBadges();save()}
+function startPomo(){if(running){clearInterval(timer);running=false;document.getElementById('pomoStart').textContent='Tiếp tục';document.getElementById('pomoStart').classList.remove('running');return}running=true;document.getElementById('pomoStart').textContent='Tạm dừng';document.getElementById('pomoStart').classList.add('running');if(new Date().getHours()<8)ST.earlyBird=true;timer=setInterval(()=>{secsLeft--;updatePomoUI();if(secsLeft<=0){clearInterval(timer);running=false;document.getElementById('pomoStart').classList.remove('running');if(phase==='work'){onPomoComplete();phase='break';const m=MODES[pomoMode];secsLeft=m.brk*60;totalSecs=m.brk*60;document.getElementById('ringFill').classList.add('break-phase');document.getElementById('pomoStart').textContent='Bắt đầu nghỉ';updatePomoUI()}else{sendNotif('💪 Hết giờ nghỉ!','Tiếp tục tập trung nào~');phase='work';resetPomo()}}},1e3)}
+function onPomoComplete(){const xp=MODES[pomoMode].work>=40?30:20;ST.totalPomos++;ST.todayPomos++;ST.todayXp+=xp;const ts=todayStr();if(ST.lastActiveDate!==ts){const diff=ST.lastActiveDate?Math.round((new Date(ts)-new Date(ST.lastActiveDate))/864e5):999;ST.streak=diff===1?ST.streak+1:1;ST.maxStreak=Math.max(ST.maxStreak,ST.streak);ST.lastActiveDate=ts}addXP(xp);addLog('work',xp);updateStats();checkBadges();save();sendNotif('🍅 Pomodoro hoàn thành!','Nghỉ ngơi thôi~ Bạn đã tập trung '+MODES[pomoMode].work+' phút')}
 document.querySelectorAll('.pomo-tab').forEach(t=>t.addEventListener('click',()=>setMode(t.dataset.mode)));
 document.getElementById('pomoStart').addEventListener('click',startPomo);
 document.getElementById('pomoReset').addEventListener('click',resetPomo);
 document.getElementById('pomoSkip').addEventListener('click',()=>{clearInterval(timer);running=false;document.getElementById('pomoStart').classList.remove('running');if(phase==='work'){phase='break';const m=MODES[pomoMode];secsLeft=m.brk*60;totalSecs=m.brk*60;document.getElementById('ringFill').classList.add('break-phase');document.getElementById('pomoStart').textContent='Bắt đầu nghỉ';updatePomoUI()}else resetPomo()});
 document.getElementById('applyCustom').addEventListener('click',()=>{const w=Math.max(1,Math.min(120,parseInt(document.getElementById('cWork').value)||25)),b=Math.max(1,Math.min(60,parseInt(document.getElementById('cBreak').value)||5));MODES.custom={work:w,brk:b};resetPomo()});
+document.getElementById('notifBtn').addEventListener('click',()=>{if(typeof Notification==='undefined'){showToast('Trình duyệt không hỗ trợ');return}Notification.requestPermission().then(p=>{if(p==='granted')showToast('🔔 Đã bật thông báo');else showToast('Bạn cần cho phép thông báo')})});
 
 /* ═══════════════════════════════════
    AMBIENT MUSIC (Web Audio API)
@@ -777,10 +911,10 @@ document.getElementById('applyCustom').addEventListener('click',()=>{const w=Mat
 let audioCtx=null,currentSound=null,currentSoundName='off';
 function getAudioCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx}
 function createNoise(type){const ctx=getAudioCtx(),bufSize=2*ctx.sampleRate,buf=ctx.createBuffer(1,bufSize,ctx.sampleRate),data=buf.getChannelData(0);let last=0;for(let i=0;i<bufSize;i++){const w=Math.random()*2-1;if(type==='brown'){data[i]=(last+.02*w)/1.02;last=data[i];data[i]*=3.5}else{data[i]=w}}const src=ctx.createBufferSource();src.buffer=buf;src.loop=true;return src}
-function stopSound(){if(currentSound){try{currentSound.src.stop()}catch(e){}currentSound=null}}
-function playSound(name){stopSound();if(name==='off'){currentSoundName='off';return}const ctx=getAudioCtx(),gain=ctx.createGain();gain.gain.value=document.getElementById('volSlider').value/100*.5;if(name==='rain'){const src=createNoise('brown');const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=800;src.connect(lp);lp.connect(gain);gain.connect(ctx.destination);src.start();currentSound={src,gain}}else if(name==='wave'){const src=createNoise('brown');const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=500;const lfo=ctx.createOscillator();lfo.frequency.value=.08;const lfoGain=ctx.createGain();lfoGain.gain.value=.3;lfo.connect(lfoGain);lfoGain.connect(gain.gain);src.connect(lp);lp.connect(gain);gain.connect(ctx.destination);src.start();lfo.start();currentSound={src,gain,lfo}}else if(name==='wind'){const src=createNoise('white');const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1200;bp.Q.value=.5;const lfo=ctx.createOscillator();lfo.frequency.value=.15;const lfoGain=ctx.createGain();lfoGain.gain.value=200;lfo.connect(lfoGain);lfoGain.connect(bp.frequency);src.connect(bp);bp.connect(gain);gain.connect(ctx.destination);src.start();lfo.start();currentSound={src,gain,lfo}}currentSoundName=name}
+function stopSound(){if(currentSound){try{currentSound.src.stop()}catch(e){}try{if(currentSound.lfo)currentSound.lfo.stop()}catch(e){}try{if(currentSound.extras)currentSound.extras.forEach(e=>e.stop())}catch(e){}currentSound=null}}
+function playSound(name){stopSound();if(name==='off'){currentSoundName='off';return}const ctx=getAudioCtx(),gain=ctx.createGain();gain.gain.value=document.getElementById('volSlider').value/100*.5;if(name==='rain'){const src=createNoise('brown');const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=800;src.connect(lp);lp.connect(gain);gain.connect(ctx.destination);src.start();currentSound={src,gain}}else if(name==='wave'){const src=createNoise('brown');const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=500;const lfo=ctx.createOscillator();lfo.frequency.value=.08;const lfoGain=ctx.createGain();lfoGain.gain.value=.3;lfo.connect(lfoGain);lfoGain.connect(gain.gain);src.connect(lp);lp.connect(gain);gain.connect(ctx.destination);src.start();lfo.start();currentSound={src,gain,lfo}}else if(name==='wind'){const src=createNoise('brown');const bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=600;bp.Q.value=1.0;const lfo=ctx.createOscillator();lfo.frequency.value=.15;const lfoGain=ctx.createGain();lfoGain.gain.value=80;lfo.connect(lfoGain);lfoGain.connect(bp.frequency);src.connect(bp);bp.connect(gain);gain.gain.value=document.getElementById('volSlider').value/100*.25;gain.connect(ctx.destination);src.start();lfo.start();currentSound={src,gain,lfo}}else if(name==='lofi'){const osc1=ctx.createOscillator();osc1.type='sine';osc1.frequency.value=220;osc1.detune.value=3;const osc2=ctx.createOscillator();osc2.type='sine';osc2.frequency.value=330;osc2.detune.value=-3;const osc3=ctx.createOscillator();osc3.type='sine';osc3.frequency.value=277;osc3.detune.value=5;const lp=ctx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=800;const g1=ctx.createGain();g1.gain.value=.045;const g2=ctx.createGain();g2.gain.value=.035;const g3=ctx.createGain();g3.gain.value=.025;const masterGain=ctx.createGain();masterGain.gain.value=document.getElementById('volSlider').value/100;const lfo=ctx.createOscillator();lfo.frequency.value=.08;const lfoG=ctx.createGain();lfoG.gain.value=.015;lfo.connect(lfoG);lfoG.connect(masterGain.gain);osc1.connect(g1);g1.connect(lp);osc2.connect(g2);g2.connect(lp);osc3.connect(g3);g3.connect(lp);lp.connect(masterGain);masterGain.connect(ctx.destination);osc1.start();osc2.start();osc3.start();lfo.start();currentSound={src:osc1,gain:masterGain,lfo,extras:[osc2,osc3]}}currentSoundName=name}
 document.getElementById('musicBtns').addEventListener('click',e=>{const btn=e.target.closest('.music-btn');if(!btn)return;document.querySelectorAll('.music-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');playSound(btn.dataset.sound)});
-document.getElementById('volSlider').addEventListener('input',e=>{if(currentSound&&currentSound.gain)currentSound.gain.gain.value=e.target.value/100*.5});
+document.getElementById('volSlider').addEventListener('input',e=>{if(currentSound&&currentSound.gain){const v=e.target.value/100;if(currentSoundName==='wind')currentSound.gain.gain.value=v*.25;else if(currentSoundName==='lofi')currentSound.gain.gain.value=v;else currentSound.gain.gain.value=v*.5}});
 
 /* ═══════════════════════════════════
    XP / LEVEL / STATS
@@ -834,6 +968,9 @@ renderMoodHistory();restoreMoodUI();renderJournalEntries();renderJournalDateLbl(
 loadTodayJournal();renderTodos();renderGoals();loadReflection();showQuote(false);
 checkAutoLogin();
 window.addEventListener('load',()=>setTimeout(initGoogleAuth,500));
+
+// Mood reminder
+setTimeout(()=>{if(!ST.moods||!ST.moods[todayStr()])sendNotif('🌿 Vườn Của Miu','Bạn ơi, hôm nay tâm trạng thế nào? 🌸')},7200000);
 </script>
 </body>
 </html>
